@@ -2,24 +2,11 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
 
 It opens terminator with 2,4 or 8 windows per tab.
 
-Will need configuration and tweaking if you wish for auto discovery to work in your work place, For now you can put one host per ine into a text file and call it something like web.txt mail.txt
+Will need configuration and tweaking if you wish for auto discovery to work in your work place, For now you can either put one host per ine into a text file and call it something like web.txt mail.txt or define servers comma seperated after -s argument
 
-File method:
+## 1. INPUT SERVERS
 
--f option to call the file and create layouts layout names will be the filenames so ensure you use different file names each time a new group is created.
-
--w 8 is windows and you can define 2 4 or 8 servers per tab
-
--r is to remove existing layout, required if you wish to refresh a layout in cases where new servers have been added to either text file or as part of network with auto discover. if -r is not given and layout already exists - the layout will be loaded instead of discovery or reading file
-
--fs full screen mode - if fullscreen option at top is set to 0 then use this to make it full screen use -r in conjunction for existing layouts
-
--x 2 Amount of times to reconnect per host this also auto groups each server per run so two apache servers  with -x 2 = 4 servers group apache-1 for instance 1 of each server and group-2 for instance 2 of each server 
-
-
-INPUT SERVERS
-
-## termssh -r -w 8 -x 2 -fs -s apache01,apache02,mysql01,gateway01   
+# termssh -r -w 8 -x 2 -fs -s apache01,apache02,mysql01,gateway01   
 {comma seperated list of servers}
 
 
@@ -35,22 +22,32 @@ This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means
  apache02 connection 2 will be part of apache-2 group
 
 
+## 2. File method:
 
-FILE
+# termssh -r -w 8 -f ./mailservers.txt
 
-## termssh -r -w 8 -f ./mailservers.txt
+-f option to call the file and create layouts layout names will be the filenames so ensure you use different file names each time a new group is created.
 
- This will read each value in the filename and create a layout called mailservers which contains each server - 8 windows per tab
- to reconnect in the future either run termssh -c or rerun above which locates existing layouts and auto connects
+-w 8 is windows and you can define 2 4 or 8 servers per tab
+
+-r is to remove existing layout, required if you wish to refresh a layout in cases where new servers have been added to either text file or as part of network with auto discover. if -r is not given and layout already exists - the layout will be loaded instead of discovery or reading file
+
+This will read each value in the filename and create a layout called mailservers which contains each server - 8 windows per tab
+to reconnect in the future either run termssh -c or rerun above which locates existing layouts and auto connects|
+
 
 # termssh -r -w 8 -x 2  -fs  -f ./webservers.txt
 
- This will read each value in the webservers.txt file  and create a layout called webservers, it will then run through -x value and connect that many times to each host
- -fs for full screen  -r to remove the layout and recreate it
+-fs full screen mode - if fullscreen option at top is set to 0 then use this to make it full screen use -r in conjunction for existing layouts
+
+-x 2 Amount of times to reconnect per host this also auto groups each server per run so two apache servers  with -x 2 = 4 servers group apache-1 for instance 1 of each server and group-2 for instance 2 of each server 
+
+
+This will read each value in the webservers.txt file  and create a layout called webservers, it will then run through -x value and connect that many times to each host
 
 
 
-Auto discovery method:
+## 3. Auto discovery method:
 
 There is a large segment at the top of the code to allow you to configure this section, to be honest I have worked in quite a few places and naming conventions vary hugely so I am afraid you may need to get hands dirty and hack the code around a bit to auto discover for you, my advice is to tweak sections that deals with auto discovery:
 
@@ -90,9 +87,8 @@ If all auto discovery found or file contains 1,2,3 or 4 servers it will still cr
 
 
 
-
--h returns:
-
+## Help 
+# termssh -h 
 
 
 options: 
@@ -162,7 +158,6 @@ EXAMPLE 5: termssh -r -w 8 -fs -x 3 -a prod at td {Remove layout, rediscover and
 EXAMPLE 6: termssh -w 8 -a prod gw {Connect to londons(apa/jbs)01[a-z]gw and try for 8 windows per tab}
 
 EXAMPLE 7: termssh -x 2 -a prod at bh gw {Connect to londons(apa/tct)01[a-z]bh + londons(apa/tct)01[a-z]gw twice per server}
-
 
 
 
