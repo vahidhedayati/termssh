@@ -1,4 +1,4 @@
-termssh is a script for (gnome) terminator.
+# termssh is a script to create and maintain gnome terminator layouts for ssh access either via -s s1,s2,s3,s4 .. ie given list of servers, -f filename to connect o servers in a filename or via -a {env} {apptypes} {service_type} to autodiscover servers and make layouts. Auto groups servers per apptype conventions, Full screen options, window per tab definitio of 2 4 or 8 windows per tab 
 
 It opens terminator with 2,4 or 8 windows per tab.
 
@@ -19,28 +19,28 @@ File method:
 
 INPUT SERVERS
 
-termssh -r -w 8 -x 2 -fs -s apache01,apache02,mysql01,gateway01   {comma seperated list of servers}
+# termssh -r -w 8 -x 2 -fs -s apache01,apache02,mysql01,gateway01   {comma seperated list of servers}
 
-# This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen 
-# apache01 connection 1 will be part of apache-1 group
-# apache01 connection 2 will be part of apache-2 group|
+This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen 
+ apache01 connection 1 will be part of apache-1 group
+ apache01 connection 2 will be part of apache-2 group|
 
-# apache02 connection 1 will be part of apache-1 group
-# apache02 connection 2 will be part of apache-2 group
+ apache02 connection 1 will be part of apache-1 group
+ apache02 connection 2 will be part of apache-2 group
 
 
 
 FILE
 
-termssh -r -w 8 -f ./mailservers.txt
+# termssh -r -w 8 -f ./mailservers.txt
 
-# This will read each value in the filename and create a layout called mailservers which contains each server - 8 windows per tab
-# to reconnect in the future either run termssh -c or rerun above which locates existing layouts and auto connects
+ This will read each value in the filename and create a layout called mailservers which contains each server - 8 windows per tab
+ to reconnect in the future either run termssh -c or rerun above which locates existing layouts and auto connects
 
-termssh -r -w 8 -x 2  -fs  -f ./webservers.txt
+# termssh -r -w 8 -x 2  -fs  -f ./webservers.txt
 
-# This will read each value in the webservers.txt file  and create a layout called webservers, it will then run through -x value and connect that many times to each host
-# -fs for full screen  -r to remove the layout and recreate it
+ This will read each value in the webservers.txt file  and create a layout called webservers, it will then run through -x value and connect that many times to each host
+ -fs for full screen  -r to remove the layout and recreate it
 
 
 
@@ -64,13 +64,13 @@ As I have said this segment is specific to current environment and you will need
 
 AUTO DISCOVER
 
-termssh -r -w 4 -a prod ta ml {which will rediscover 4 windows per tab and load londonstct01{a-z}ml and londonsapa01{a-z}ml mail servers so long as it found them
+# termssh -r -w 4 -a prod ta ml {which will rediscover 4 windows per tab and load londonstct01{a-z}ml and londonsapa01{a-z}ml mail servers so long as it found them
 
 Connection / Removal of existing layouts
 
-termssh -c Connect to existing layout - this will list your layouts and you can connect to what is already saved
+# termssh -c Connect to existing layout - this will list your layouts and you can connect to what is already saved
 
-termssh -d To remove existing layout - again it will list items and numerically select layout to be removed
+# termssh -d To remove existing layout - again it will list items and numerically select layout to be removed
 
 If all auto discovery found or file contains 1,2,3 or 4 servers it will still create the layout and will be useable, 3 windows is flakey since it opens a spare one. Windows can be moved within tabs.
 
