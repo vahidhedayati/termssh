@@ -19,13 +19,19 @@ File method:
 
 INPUT SERVERS
 
-## termssh -r -w 8 -x 2 -fs -s apache01,apache02,mysql01,gateway01   {comma seperated list of servers}
+## termssh -r -w 8 -x 2 -fs -s apache01,apache02,mysql01,gateway01   
+{comma seperated list of servers}
+
 
 This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen 
+
+
  apache01 connection 1 will be part of apache-1 group
+
  apache01 connection 2 will be part of apache-2 group|
 
  apache02 connection 1 will be part of apache-1 group
+
  apache02 connection 2 will be part of apache-2 group
 
 
@@ -64,13 +70,19 @@ As I have said this segment is specific to current environment and you will need
 
 AUTO DISCOVER
 
-# termssh -r -w 4 -a prod ta ml {which will rediscover 4 windows per tab and load londonstct01{a-z}ml and londonsapa01{a-z}ml mail servers so long as it found them
+# termssh -r -w 4 -a prod ta ml 
+
+{which will rediscover 4 windows per tab and load londonstct01{a-z}ml and londonsapa01{a-z}ml mail servers so long as it found them
 
 Connection / Removal of existing layouts
 
-# termssh -c Connect to existing layout - this will list your layouts and you can connect to what is already saved
+# termssh -c
 
-# termssh -d To remove existing layout - again it will list items and numerically select layout to be removed
+ Connect to existing layout - this will list your layouts and you can connect to what is already saved
+
+# termssh -d 
+
+To remove existing layout - again it will list items and numerically select layout to be removed
 
 If all auto discovery found or file contains 1,2,3 or 4 servers it will still create the layout and will be useable, 3 windows is flakey since it opens a spare one. Windows can be moved within tabs.
 
@@ -84,45 +96,91 @@ If all auto discovery found or file contains 1,2,3 or 4 servers it will still cr
 
 
 options: 
+
 -r  | --removelayout                            |  remove layout and refresh it
+
 -fs | --fullscreen                              |  start session in full screen mode
+
 -w  | --windows  [2/4/8 ]                       | -w followed by 2 or 4 or 8 windows per tab
+
 -x  | --times  [1-10 ]                          | -x followed by 1 to any number above - reconnect value per server
+
 Followed by either:
+
 -s  | --servers |[s1,s2,s3]                     | where s1,s2,s3 is server name seperated by commas
+
 -f  | --file [./mail.txt]                       | where mail.txt contains list of mail servers
+
 -a  | --autodiscover [val1] [val2] [val3]       | explained in detail below
 
+
 Usage: termssh [-h {for help}] | [-c {connect to existing layouts} ] | [-d {delete existing layout} ]
+
 Usage: termssh [-l {for list servers} followed by prod/stage/uat atjmo app1 app2 app3 app4 app5 app6 ] 
+
 Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-f {for file} filename ]
+
 Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-a {for autodiscovery} prod/stage/uat atjmo app1..app6 ] 
+
 Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-s {server1,server2,server3} 
 
+
 Command Line Input CLI connect example:
-EXAMPLE 6: termssh -fs -x 2 -w 8 -s server1,server2,server4..server8 {Fullscreen mode, 8 windows per tab connect twice per server to comma seperated list of servers given = 16 windows 2 tabs } 
-EXAMPLE 6: termssh -r -w 2 -x 3 -s montct01,monapa01 {Remove layout 2 windows per tab X 3 comma seperated list i.e. 3 times to monstct01 and 3 times to monsapa01 2 per tab = 3 tabs } 
+
+EXAMPLE 1: termssh -fs -x 2 -w 8 -s server1,server2,server4..server8
+ {Fullscreen mode, 8 windows per tab connect twice per server to comma seperated list of servers given = 16 windows 2 tabs } 
+
+EXAMPLE 2: termssh -r -w 2 -x 3 -s montct01,monapa01 
+{Remove layout 2 windows per tab X 3 comma seperated list i.e. 3 times to monstct01 and 3 times to monsapa01 2 per tab = 3 tabs } 
+
+
 
 File connect example:
-EXAMPLE 6: termssh -w 8 -f ./servers.txt {Go through servers.txt and connect to all with 8 windows per tab } 
-EXAMPLE 6: termssh -r -w 8 -f ./servers.txt {Remove layout go through file and connect 8 windows per tab} 
+
+EXAMPLE 3: termssh -w 8 -f ./servers.txt 
+{Go through servers.txt and connect to all with 8 windows per tab } 
+
+EXAMPLE 4: termssh -r -w 8 -f ./servers.txt 
+{Remove layout go through file and connect 8 windows per tab} 
+
+
 
 Auto discovery connect examples:
+
 termssh -a {environment} {apptype} {applications}
+
 {environment} can be: prod/stage/uat
+
 {apptype} can be: matjo includes msyql/tomcat/apache/jboss/oracle use 1 or all or a combination
+
 {applications} are seperated by spaces i.e. gw td iw and so forth up to 6 environements accepted
 
-EXAMPLE 1: termssh -r -w 8 -fs -x 3 -a prod at td {Remove layout, rediscover and connect to londons(tct/apa)01[a-z]{td|at} 3 times, 8 windows per tab, fullscreen}
-EXAMPLE 2: termssh -w 8 -a prod gw {Connect to londons(apa/jbs)01[a-z]gw and try for 8 windows per tab}
-EXAMPLE 3: termssh -x 2 -a prod at bh gw {Connect to londons(apa/tct)01[a-z]bh + londons(apa/tct)01[a-z]gw twice per server}
+
+
+EXAMPLE 5: termssh -r -w 8 -fs -x 3 -a prod at td {Remove layout, rediscover and connect to londons(tct/apa)01[a-z]{td|at} 3 times, 8 windows per tab, fullscreen}
+
+EXAMPLE 6: termssh -w 8 -a prod gw {Connect to londons(apa/jbs)01[a-z]gw and try for 8 windows per tab}
+
+EXAMPLE 7: termssh -x 2 -a prod at bh gw {Connect to londons(apa/tct)01[a-z]bh + londons(apa/tct)01[a-z]gw twice per server}
+
+
+
 
 Auto discovery list example:
-EXAMPLE 4: termssh -l prod at sd fg {List all servers connectable on londons(apa/tct)01[a-z]sd + londons(apa/tct)01[a-z]fg} 
+
+EXAMPLE 8: termssh -l prod at sd fg {List all servers connectable on londons(apa/tct)01[a-z]sd + londons(apa/tct)01[a-z]fg} 
+
+
 
 Existing Layout connection:
-EXAMPLE 5: termssh -c {List existing layouts and give u numeric option to connect to them} 
+
+EXAMPLE 9: termssh -c 
+{List existing layouts and give u numeric option to connect to them} 
+
+
 
 Removal of existing layout:
-EXAMPLE 5: termssh -d {List existing layouts and give u numeric option to remove 1} 
+
+EXAMPLE 10: termssh -d
+ {List existing layouts and give u numeric option to remove 1} 
 
