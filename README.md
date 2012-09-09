@@ -1,6 +1,18 @@
-termssh is a script to create and maintain gnome terminator layouts for ssh access either via -s s1,s2,s3,s4 .. ie given list of servers, -f filename to connect o servers in a filename or via -a {env} {apptypes} {service_type} to autodiscover servers and make layouts. Auto groups servers per apptype conventions, Full screen options, window per tab definitio of 2 4 or 8 windows per tab 
+termssh is a script to create and maintain gnome terminator layouts for ssh access either via:
 
-It opens terminator with 2,4 or 8 windows per tab.
+ -s s1,s2,s3,s4  |  where -s if followed by server names comma seperated
+
+ -f filename  |  to connect to servers in a filename 
+
+ -a {env} {apptypes} {service_type}   | to autodiscover servers and make layouts. 
+
+ -g    | Auto groups servers per apptype conventions,
+
+ -fs   | Full screen options, 
+
+ -w 8  | window per tab definition of 2 4 or 8 windows per tab 
+
+
 
 Will need configuration and tweaking if you wish for auto discovery to work in your work place, For now you can either put one host per ine into a text file and call it something like web.txt mail.txt or define servers comma seperated after -s argument
 
@@ -80,6 +92,9 @@ Connection / Removal of existing layouts
 # termssh -d 
 
 To remove existing layout - again it will list items and numerically select layout to be removed
+
+
+
 
 If all auto discovery found or file contains 1,2,3 or 4 servers it will still create the layout and will be useable, 3 windows is flakey since it opens a spare one. Windows can be moved within tabs.
 
