@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 ##############################################################################
 #    Bash script written by Vahid Hedayati September 2012
@@ -48,8 +48,9 @@ DEFAULT_WINDOWS=4
 # in a specific group and so forth - its automatic
 # even with 1 connection per server it will group tomcats in one group and apaches in another ;)
 # if enabled and servers match grouping conventions then groups defined by set_grouping function
+# if set to 0 -g required to enable grouping
 
-AUTO_GROUPING_ENABLED=1;
+AUTO_GROUPING_ENABLED=0;
 
 
 ###############################
@@ -159,7 +160,7 @@ DF="[global_config]\n  enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler,
 DF="$DF LaunchpadBugURLHandler\n [keybindings]\n[profiles]\n"
 DF="$DF  [[default]]\n    scrollback_infinite = True\n    ";
 DF="$DF split_to_group = true\n    foreground_color = \"#ffffff\""
-DEFAULT_CONFIG=DF;
+DEFAULT_CONFIG=$DF;
 #############################################################################################
 
 #############################################################################################
@@ -296,22 +297,24 @@ function set_apptype() {
 # server being processed and if it matches then group it is placed in specific group
 groupname="";
 function set_grouping() {
-local input=$servers;
-  if [[ $input =~ $apache_convention ]]; then
-        groupname=$apache_group
-  fi
-  if [[ $input =~ $tomcat_convention ]]; then
-         groupname=$tomcat_group
-  fi
-  if [[ $input =~ $jboss_convention ]]; then
-	groupname=$jboss_group
-  fi
-  if [[ $input =~ $mysql_convention ]]; then
-        groupname=$mysql_group
-  fi
-  if [[ $input =~ $oracle_convention ]]; then
-        groupname=$oracle_group
-  fi
+  local input=$servers;
+    if [ $AUTO_GROUPING_ENABLED -ge 1 ];then
+      if [[ $input =~ $apache_convention ]]; then
+	  groupname=$apache_group
+      fi
+      if [[ $input =~ $tomcat_convention ]]; then
+	  groupname=$tomcat_group
+      fi
+      if [[ $input =~ $jboss_convention ]]; then
+	  groupname=$jboss_group
+      fi
+      if [[ $input =~ $mysql_convention ]]; then
+	  groupname=$mysql_group
+      fi
+      if [[ $input =~ $oracle_convention ]]; then
+	  groupname=$oracle_group
+      fi
+    fi
 }
 #############################################################################################
 
@@ -406,10 +409,12 @@ function connect_existing_layout() {
 	echo
 	  select layout  in $layouts
 	  do
-	    IFS=$OLDIFS
+	    #IFS=$OLDIFS
+	    layout=`echo $layout|sed -e "s/^ //g"`
+	    layout=`echo $layout|sed -e "s/ $//g"`
 	    echo
-	    echo "connecting to $layout"
-	    terminator -l $layout&
+	    echo "connecting to \"$layout\""
+	    terminator -l "$layout"&
 	    break
 	  done
 	exit
@@ -535,26 +540,34 @@ function check_reconnection() {
     if [ "$value" == "" ]; then
 	value=$DEFAULT_CONNECTIONS;
     fi
-
+echo "CHECKING RECONNECTION";
+	  >$FILE.tmp
 	if ((value)) 2>/dev/null; then
 	  value=$((value));
-	  >$FILE.tmp
-	    j=0;
+	  j=0;
 	  for ((i=0; i < $value; i++)) 
-	  do
-	    ((j++))
-	      for servers in `cat $FILE`
-	      do
-		set_grouping
-		if [ $DEBUG -ge 1 ];then
-		    echo $servers"|"$groupname"-"$j   $FILE.tmp
-		fi
-		echo $servers"|"$groupname"-"$j >> $FILE.tmp
-	      done
-	   done
-	   mv $FILE.tmp $FILE
-	  fi
- 
+	   do
+		((j++))
+		for servers in `cat $FILE`
+		do
+		   set_grouping
+		    if [  "$groupname" !=  "" ];then
+			if [ $DEBUG -ge 1 ];then
+			  echo "FOUND $groupname"
+			  echo $servers"|"$groupname"-"$j   $FILE.tmp
+			fi
+			echo $servers"|"$groupname"-"$j >> $FILE.tmp
+		    else
+			if [ $DEBUG -ge 1 ];then
+			   echo "NOT FOUND $groupname"
+			   echo $servers $FILE.tmp
+			fi
+			echo $servers >> $FILE.tmp
+		    fi
+		done
+	    done
+	    FILE=$FILE.tmp
+	   fi    
 }
 
 #############################################################################################
@@ -800,24 +813,33 @@ function create_child2() {
 function create_terminals() {
 	  	for ((ee=0; ee < 1; ee++)) 
 		do
-		    currserver2=""; currserver1=""; currserver="";
+		    currserver2=""; currserver1=""; currserver=""; currgroup2="";
 		    m1=`expr $servercount - $currentserversize`
 		    ((currentserversize--))
 
 		    if [ $WINDOWS -ge 2 ]; then
 		      m2=`expr $servercount - $currentserversize`
 		      ((currentserversize--))
-		      currserver=${serverarray[$m2]}
-		      currserver2=`echo $currserver|awk -F"|" '{print $1}'`
-		      currgroup2=`echo $currserver|awk -F"|" '{print $2}'`
 		      
+		      currserver=${serverarray[$m2]}
+		      if [[ $currserver =~ | ]]; then
+			  currserver2=`echo $currserver|awk -F"|" '{print $1}'`
+			  currgroup2=`echo $currserver|awk -F"|" '{print $2}'`
+		      else
+			  currserver2=$currserver
+		      fi
 		    fi
 		    c=0; d=1;
 		    command1="";
 		    command2="";
 		    currserver=${serverarray[$m1]}
-		    currserver1=`echo $currserver|awk -F"|" '{print $1}'`
-		    currgroup1=`echo $currserver|awk -F"|" '{print $2}'`
+		    if [[ $currserver =~ | ]]; then
+			  currserver1=`echo $currserver|awk -F"|" '{print $1}'`
+			  currgroup1=`echo $currserver|awk -F"|" '{print $2}'`
+		    else
+			  currserver1=$currserver
+		    fi
+
 		    if [ $DEBUG -ge 1 ];then
 			echo " ---> $currserver1 $m1"
 			echo " ---> $currserver2 $m2"
@@ -828,7 +850,9 @@ function create_terminals() {
 			else
 			  command1="command = ssh $currserver1\n"
 			fi 
-			currentgroup1="group = $currgroup1\n"
+			if [ "$currgroup1" != "" ];then 
+			  currentgroup1="group = $currgroup1\n"
+			fi
 		    fi
 		    if [ "$currserver2" != "" ];then
 			if [ $DEBUG -ge 1 ]; then
@@ -836,7 +860,9 @@ function create_terminals() {
 			else
 			  command2="command = ssh $currserver2\n"
 			fi
-			currentgroup2="group = $currgroup2\n"
+			if [ "$currgroup2" != "" ];then 
+			    currentgroup2="group = $currgroup2\n"
+			fi
 		    fi
 		    CONFIG_LAYOUT=$CONFIG_LAYOUT" [[[terminal$terminal_id]]]\n   profile = default\n   "$command1"\n   "$currentgroup1"   type = Terminal\n   order = $c\n   parent = child$previousid\n";
 		    ((terminal_id++))
@@ -858,9 +884,10 @@ function usage() {
   clear;
   colourit red "options: "
   echo -e "-r  | --removelayout   				|  remove layout and refresh it"
-  echo -e "-fs | --fullscreen  				|  start session in full screen mode"
-  echo "-w  | --windows  [2/4/8 ]  			| -w followed by 2 or 4 or 8 windows per tab"
-  echo "-x  | --times  [1-10 ]  			| -x followed by 1 to any number above - reconnect value per server"
+  echo -e "-fs | --fullscreen  				|  start session in full screen mode, Override FULL_SCREEN_MODE=0"
+  echo -e "-g | --group  				|  groups server as per naming set_apptype, Override AUTO_GROUPING_ENABLED=0"
+  echo -e "-w  | --windows  [2/4/8 ]  			| -w followed by 2 or 4 or 8 windows per tab"
+  echo -e "-x  | --times  [1-10 ]  			| -x followed by 1 to any number above - reconnect value per server"
   colourit red  "Followed by either:"
   echo -e "-s  | --servers |[s1,s2,s3]			| where s1,s2,s3 is server name seperated by commas"
   echo -e "-f  | --file [./mail.txt]			| where mail.txt contains list of mail servers"
@@ -967,7 +994,10 @@ while test -n "$1"; do
 		FULL_SCREEN_MODE=1;
 		#shift
             ;;
-
+        --group|-g)
+		AUTO_GROUPING_ENABLED=1;
+		#shift
+            ;;
         --connect|-c)
 		connect_existing_layout
 		shift

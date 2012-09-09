@@ -6,11 +6,11 @@ Will need configuration and tweaking if you wish for auto discovery to work in y
 
 ## 1. INPUT SERVERS
 
-# termssh -r -w 8 -x 2 -fs -s apache01,apache02,mysql01,gateway01   
+# termssh -r -w 8 -x 2 -fs -g -s apache01,apache02,mysql01,gateway01   
 {comma seperated list of servers}
 
 
-This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen 
+This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen and will autogroup (-g)
 
 
  apache01 connection 1 will be part of apache-1 group
@@ -95,7 +95,9 @@ options:
 
 -r  | --removelayout                            |  remove layout and refresh it
 
--fs | --fullscreen                              |  start session in full screen mode
+-fs | --fullscreen  				|  start session in full screen mode, Override FULL_SCREEN_MODE=0
+
+-g  | --group  					|  groups server as per naming set_apptype, Override AUTO_GROUPING_ENABLED=0
 
 -w  | --windows  [2/4/8 ]                       | -w followed by 2 or 4 or 8 windows per tab
 
@@ -155,7 +157,7 @@ termssh -a {environment} {apptype} {applications}
 
 EXAMPLE 5: termssh -r -w 8 -fs -x 3 -a prod at td {Remove layout, rediscover and connect to londons(tct/apa)01[a-z]{td|at} 3 times, 8 windows per tab, fullscreen}
 
-EXAMPLE 6: termssh -w 8 -a prod gw {Connect to londons(apa/jbs)01[a-z]gw and try for 8 windows per tab}
+EXAMPLE 6: termssh -w 8 -g -a prod gw {Connect to londons(apa/jbs)01[a-z]gw and try for 8 windows per tab} and auto group gw jboss and gatewaya apaches (-g)
 
 EXAMPLE 7: termssh -x 2 -a prod at bh gw {Connect to londons(apa/tct)01[a-z]bh + londons(apa/tct)01[a-z]gw twice per server}
 
