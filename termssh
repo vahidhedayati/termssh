@@ -81,7 +81,7 @@ FULL_SCREEN_MODE=1;
 # If you are trying get auto discovery to work - more verbosity is given and connections are 
 # converted to local top command on local machine executing this script
 
-DEBUG=1;
+DEBUG=0;
 
 
 #############################################################################################
