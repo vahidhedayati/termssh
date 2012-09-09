@@ -81,7 +81,7 @@ FULL_SCREEN_MODE=1;
 # If you are trying get auto discovery to work - more verbosity is given and connections are 
 # converted to local top command on local machine executing this script
 
-DEBUG=0;
+DEBUG=1;
 
 
 #############################################################################################
@@ -434,9 +434,11 @@ function delete_existing_layout() {
 	echo
 	  select layout  in $layouts
 	  do
-	    IFS=$OLDIFS
+	    #IFS=$OLDIFS
+	    layout=`echo $layout|sed -e "s/^ //g"`
+	    layout=`echo $layout|sed -e "s/ $//g"`
 	    echo
-	    colour red "Deleting $layout"
+	    colourit red "Deleting $layout"
 	    del_entry;
 	    break
 	  done
