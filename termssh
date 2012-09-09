@@ -209,16 +209,16 @@ function validate_servers() {
 			    check_method;
 			fi
 		    done
-		    if [ $DEBUG -ge 1 ]; then
-			echo  "_________________________________________________"
-			echo  "CONNECTIONS WILL BE MADE TO:"
-			echo  "_________________________________________________"
-			cat $FILE
-		    fi
-				fi
-		done
+		fi
+	     done
 	 fi
     done
+    if [ $DEBUG -ge 1 ]; then
+	echo  "_________________________________________________"
+	echo  "CONNECTIONS WILL BE MADE TO:"
+	echo  "_________________________________________________"
+	cat $FILE
+   fi
 }
 #############################################################################################
 
@@ -244,6 +244,7 @@ function check_method()  {
       else
 	nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null	
       fi
+	
       if [ $? = 0 ]; then
          echo $server >> $FILE
       fi
