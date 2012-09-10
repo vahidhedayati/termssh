@@ -817,7 +817,8 @@ function create_child2() {
 function create_terminals() {
 	  	for ((ee=0; ee < 1; ee++)) 
 		do
-		    currserver2=""; currserver1=""; currserver=""; currgroup2=""; currgroup1="";
+		    currserver2=""; currserver1=""; currserver=""; 
+		    currgroup2=""; currgroup1=""; currentgroup2="" currentgroup1="";
 		    m1=`expr $servercount - $currentserversize`
 		    ((currentserversize--))
 
