@@ -6,6 +6,8 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
 
  -a {env} {apptypes} {service_type}   | to autodiscover servers and make layouts. 
 
+ -l {env} {apptypes} {service_type}   | to TEST autodiscovery of servers and show what servers are being generated
+ 
  -g    | Auto groups servers per apptype conventions,
 
  -fs   | Full screen options, 
@@ -15,6 +17,44 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
 
 
 Will need configuration and tweaking if you wish for auto discovery to work in your work place, For now you can either put one host per ine into a text file and call it something like web.txt mail.txt or define servers comma seperated after -s argument
+
+## Testing termssh 
+
+To understand the power of grouping -g simply place entire code in DEBUG mode, at the top of termssh script find DEBUG which is set to 0 change this to 1.
+Save script then on command line type in:
+
+
+# termssh -r -w 8 -g -s apa01,apa02,apa03,apa04,tct01,tct02,tct03,tct04
+
+This will open 8 window terminator session with apaches in group 
+so when you type in a command to one apache all servers get the command and same for the tct tomcat group
+
+Once you have seen this working you can look further in the script and see I have defined group names as per application type i.e. 2nd input of auto discovery.
+In this instance my server names matched that naming convention which then got processed by group function below it.
+
+Whilst DEBUG=1 at top of termssh
+
+# termssh -r -w 4 -x 2 -g -s apa01,apa02
+
+This will launch -x 2 i.e. connections to apa01 and apa02 twice for each host.
+The grouping works out you have two connections to the host so assigns group-1 to apa01 apa02 first time around
+and group apache-2 to apa01 and apa02 for 2nd set of connections.
+
+This means you can now type in for example tail -f /var/log/messages on one of the apaches which sends it to one set of the servers
+and then restart a service by typing it to 2nd instance of apa01 which gets sent to apa02 as part of group-2
+
+hope it makes sense.
+
+use: 
+# termssh -l prod t gw 
+# termssh -l prod ta ab
+# termssh -l prod tajmo ab
+
+with our without DEBUG mode being enabled to understand how the auto discovery works and then feel free to hack the prod definitions the tajmo which stands for tomcat,apache,jboss,mysql,oracle and then finally ending convention which gets mapped with a-z of characters before it.
+
+
+
+
 
 ## 1. INPUT SERVERS
 
