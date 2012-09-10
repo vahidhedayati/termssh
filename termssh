@@ -73,13 +73,13 @@ DEFAULT_CONNECTIONS=1;
 # mode. If an existing layout -r -fs is required as part of argument to rediscover connection 
 # and set it as full screen
 
-FULL_SCREEN_MODE=1;
+FULL_SCREEN_MODE=0;
 
 
 
 ###############################
 # If you are trying get auto discovery to work - more verbosity is given and connections are 
-# converted to local top command on local machine executing this script
+# converted to local /bin/bash  command on local machine executing this script
 
 DEBUG=0;
 
@@ -851,7 +851,7 @@ function create_terminals() {
 		    fi
 		    if [ "$currserver1" != "" ];then
 			if [ $DEBUG -ge 1 ]; then
-			  command1="command =top\n"
+			  command1="command = /bin/bash\n"
 			else
 			  command1="command = ssh $currserver1\n"
 			fi 
@@ -861,7 +861,7 @@ function create_terminals() {
 		    fi
 		    if [ "$currserver2" != "" ];then
 			if [ $DEBUG -ge 1 ]; then
-			  command2="command = top\n"
+			  command2="command = /bin/bash\n"
 			else
 			  command2="command = ssh $currserver2\n"
 			fi
