@@ -595,7 +595,7 @@ set_resolution;
 	  layout="layout_"$WINDOWS
 	fi
 	if [ $DEBUG -ge 1 ];then
-		layout="TEST_"$layout
+		layout="test_"$layout
 	fi
 
 	#changed from asking to giving -r option which sets auto removal
