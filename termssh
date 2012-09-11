@@ -412,8 +412,7 @@ function connect_existing_layout() {
 	  select layout  in $layouts
 	  do
 	    #IFS=$OLDIFS
-	    layout=`echo $layout|sed -e "s/^ //g"`
-	    layout=`echo $layout|sed -e "s/ $//g"`
+	    layout=${layout//[[:space:]]}
 	    echo
 	    echo "connecting to \"$layout\""
 	    terminator -l "$layout"&
@@ -437,8 +436,7 @@ function delete_existing_layout() {
 	  select layout  in $layouts
 	  do
 	    #IFS=$OLDIFS
-	    layout=`echo $layout|sed -e "s/^ //g"`
-	    layout=`echo $layout|sed -e "s/ $//g"`
+	    layout=${layout//[[:space:]]}
 	    echo
 	    colourit red "Deleting $layout"
 	    del_entry;
@@ -544,7 +542,6 @@ function check_reconnection() {
     if [ "$value" == "" ]; then
 	value=$DEFAULT_CONNECTIONS;
     fi
-echo "CHECKING RECONNECTION";
 	  >$FILE.tmp
 	if ((value)) 2>/dev/null; then
 	  value=$((value));
@@ -1046,7 +1043,8 @@ while test -n "$1"; do
 		USERCHOICE="F"
 		FILE=$2
 		set_terminator;
-		terminator -l $layout&
+		layout=${layout//[[:space:]]}
+		terminator -l "$layout"&
 		exit 0;
             ;;
         --autodiscover|-a)
@@ -1064,7 +1062,8 @@ while test -n "$1"; do
 		validate_servers;
 		#check_method;
 		set_terminator;
-		terminator -l $layout& 
+		layout=${layout//[[:space:]]}
+		terminator -l "$layout"& 
 		exit 0
             ;;
         *)
