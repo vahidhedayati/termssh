@@ -587,14 +587,15 @@ set_resolution;
 	if [ "$USERCHOICE" == "F" ];then
 	  layabout=`echo $FILE |awk -F"/" '{print $NF}'|awk -F"." '{print $1}'`
 	  layout=$layabout"_"$WINDOWS
-	elif [ "$USERCHOICE" == "L" ]; then
-	  layout="test_"$environment"_"$apptype"_"$conapps"_"$WINDOWS
 	elif [ "$USERCHOICE" == "A" ]; then
 	  layout=$environment"_"$apptype"_"$conapps"_"$WINDOWS
 	elif [ "$USERCHOICE" == "I" ]; then
 	  layout=$servernames"_"$WINDOWS	
 	else
 	  layout="layout_"$WINDOWS
+	fi
+	if [ $DEBUG -ge 1 ];then
+		layout="TEST_"$layout
 	fi
 
 	#changed from asking to giving -r option which sets auto removal
@@ -1027,7 +1028,6 @@ while test -n "$1"; do
 		exit 0;
 	    ;;
 	 --list|-l)
-		USERCHOICE="L"
 		environment=$2
 		apptype=$3
 		apparray=( $4 $5 $6 $7 $8 $9 )
