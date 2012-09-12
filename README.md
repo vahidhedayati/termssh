@@ -57,10 +57,11 @@ with our without DEBUG mode being enabled to understand how the auto discovery w
 
 
 ## 1. INPUT SERVERS
+Enable debug mode at top of the script and try out:
 
-# termssh -r -w 8 -x 2 -fs -g -s apache01,apache02,mysql01,gateway01   
+# termssh -r -w 8 -x 2 -fs -g -s apa01,apa02,apa03,apa04,mql01,mql02,gw01,gw02   
 {comma seperated list of servers}
-
+then type in a command into any of the apache-1 sessions.
 
 This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen and will autogroup (-g)
 
