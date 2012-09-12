@@ -89,7 +89,11 @@ DEBUG=0;
 
 terminator_config_folder="$HOME/.config/terminator"
 terminator_config_file="$terminator_config_folder/config"
-FILE="/tmp/hosts.collect";
+
+# due to permissions issues userid added to filename
+# to stop permission denied messages
+userid=$(id -u)
+FILE="/tmp/terminator-hosts-"$userid".collect";
 
 #############################################################################################
 
@@ -966,6 +970,15 @@ function colourit() {
 }
 
 #############################################################################################
+
+# Check if the logged in user is root and give option to exit code
+if [ $userid -eq 0 ];then
+ colourit red "Warning you are logged in as root and about to ssh to hosts continue (y/n)?"
+ read userinput;
+ if [ "$userinput" == "n" ]; then
+        exit;
+ fi
+fi
 
 
 
