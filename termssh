@@ -36,6 +36,14 @@
 
 #############################################################################################
 
+
+###############################
+# If you are trying get auto discovery to work - more verbosity is given and connections are 
+# converted to local /bin/bash  command on local machine executing this script
+
+DEBUG=0;
+
+
 ###############################
 # Amount of windows to open up with terminator
 # can be set to 2,4 or 8 
@@ -77,11 +85,19 @@ FULL_SCREEN_MODE=0;
 
 
 
-###############################
-# If you are trying get auto discovery to work - more verbosity is given and connections are 
-# converted to local /bin/bash  command on local machine executing this script
 
-DEBUG=0;
+###############################
+# Prompt before re-using existing layouts
+# set to 0 so if input of file or auto discovery matches existing layouts
+# termssh would then load the layout rather than try to rediscover
+# or read in the actual file.
+# if set to 0 -r  would be required to remove the layout and recreate
+# if set to 1 if any auto discovery or file name matches existing layout a choice is then
+# given to recreate it or reconnect to existing layout.
+# -r can be used whilst set to one which should ignore this prompt
+
+REUSE_LAYOUT_PROMPT=0;
+
 
 
 #############################################################################################
@@ -603,11 +619,16 @@ set_resolution;
 	fi
 
 	#changed from asking to giving -r option which sets auto removal
-	#check_layout;
+
 	if [ $REMOVE_LAYOUT -ge 1 ] && [ "$layout" != "" ];then
 	  del_entry
 	fi
-	
+	# If REUSE_LAYOUT_PROMPT IS SET TO 1 and -r not used to prompt for
+        # re-usage of existing layouts
+        if [ $REMOVE_LAYOUT -le 0 ] && [ $REUSE_LAYOUT_PROMPT -ge 1 ];then
+        check_layout;
+        fi
+
 	find_layout;
 	if [ $LAYOUT_FOUND -le 0 ] ;then
 	  
