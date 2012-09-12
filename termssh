@@ -581,7 +581,8 @@ function check_reconnection() {
 			echo $servers"|"$groupname"-"$j >> $FILE.tmp
 		    else
 			if [ $DEBUG -ge 1 ];then
-			   echo "NOT FOUND $groupname"
+			   echo "No group name found for $servers - either does not match server convention at top of script"
+                           echo "or : AUTO_GROUPING is set to 0 and -g is not used in option given"
 			   echo $servers $FILE.tmp
 			fi
 			echo $servers >> $FILE.tmp
