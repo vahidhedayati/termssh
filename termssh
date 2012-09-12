@@ -393,7 +393,8 @@ EOF
 #############################################################################################
 
 #############################################################################################
-# depreceated was used to confirm if they wanted to refresh config which is overridden by -r
+#  used to confirm if they wanted to refresh config which is overridden by -r
+#  REUSE_LAYOUT_PROMPT calls this
 function check_layout() { 
       grep "$layout" $terminator_config_file > /dev/null
       if [ $? = 0 ]; then
@@ -596,8 +597,8 @@ function check_reconnection() {
 
 
 #############################################################################################
-# oh this is a monster
-# this big boy does all the terminator layout stuff and works in all forms of user input 
+# this is the main core of the code that actually goes about creating the terminator layout
+# uses some other sub procedures below it to create the parents children and terminals
 #  i.e. -a -f -s 
 
 function set_terminator() { 
