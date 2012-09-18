@@ -288,6 +288,25 @@ function validate_servers2() {
 }
 
 
+#############################################################################################
+# this sets up terminator connection ensures there are entries in tmp file before launching terminator
+# also ensures you are not logged in as root
+function terminator_connect() {
+                check_root;
+                filesize=`wc -l $FILE|awk '{print $1}'`
+                if [ $filesize -gt 0 ];then
+                        set_terminator;
+                        layout=${layout//[[:space:]]}
+                        terminator -l "$layout"&
+                else
+                        echo "File $FILE has no entries - terminator not launched"
+                fi
+
+}
+
+
+
+
 
 
 #############################################################################################
@@ -1101,30 +1120,32 @@ while test -n "$1"; do
 		reconnect=$2;
 		shift;
 	    ;;
-	 --servers|-s)
-		USERCHOICE="I"
-		servernames=$2
-		read_cli_servers;
-		set_terminator;
-		terminator -l $layout&
-		exit 0;
-	    ;;
-	 --list|-l)
-		environment=$2
-		apptype=$3
-		apparray=( $4 $5 $6 $7 $8 $9 )
-		echo "Listing servers for  $environment $apptype"
-		set_environment;
-		set_apptype;
-		if [ "$environment" == "" ] || [ "$apptype" == "" ] ; then
-		  usage
-		  exit 1;
-		fi
-		DEBUG=1;
-		validate_servers;
-		exit 0;
+         --servers|-s)
+                USERCHOICE="I"
+                servernames=$2
+                read_cli_servers;
+                #set_terminator;
+                #terminator -l $layout&
+                terminator_connect;
+                exit 0;
             ;;
-         --autodiscover2|-ad)
+         --list|-l)
+                environment=$2
+                apptype=$3
+                apparray=( $4 $5 $6 $7 $8 $9 )
+                echo "Listing servers for  $environment $apptype"
+                set_environment;
+                set_apptype;
+                if [ "$environment" == "" ] || [ "$apptype" == "" ] ; then
+                  usage
+                  exit 1;
+                fi
+                DEBUG=1;
+                validate_servers;
+                exit 0;
+            ;;
+
+        --autodiscover2|-ad)
                 USERCHOICE="AD"
                 input=$2;
                 if [ "$input" == "" ];then
@@ -1133,39 +1154,40 @@ while test -n "$1"; do
                 fi
 
                 validate_servers2;
-                set_terminator;
-                layout=${layout//[[:space:]]}
-                terminator -l "$layout"&
+                terminator_connect;
                 exit;
         ;;
         --file|-f)
-		USERCHOICE="F"
-		FILE=$2
-		set_terminator;
-		layout=${layout//[[:space:]]}
-		terminator -l "$layout"&
-		exit 0;
+                USERCHOICE="F"
+                FILE=$2
+                #set_terminator;
+                #layout=${layout//[[:space:]]}
+                #terminator -l "$layout"&
+                terminator_connect;
+                exit 0;
             ;;
         --autodiscover|-a)
-		USERCHOICE="A"
-		environment=$2
-		apptype=$3
-		apparray=( $4 $5 $6 $7 $8 $9 )
-		set_environment;		    
-		set_apptype;
-		if [ "$environment" == "" ] || [ "$apptype" == "" ] ;then
-		    usage
-		    exit
-		fi
-	#	DEBUG=1;
-		validate_servers;
-		#check_method;
-		set_terminator;
-		layout=${layout//[[:space:]]}
-		terminator -l "$layout"& 
-		exit 0
+                USERCHOICE="A"
+                environment=$2
+                apptype=$3
+                apparray=( $4 $5 $6 $7 $8 $9 )
+                set_environment;
+                set_apptype;
+                if [ "$environment" == "" ] || [ "$apptype" == "" ] ;then
+                    usage
+                    exit
+                fi
+        #       DEBUG=1;
+                validate_servers;
+                #check_method;
+                #set_terminator;
+                #layout=${layout//[[:space:]]}
+                #terminator -l "$layout"&
+                terminator_connect;
+                exit 0
             ;;
         *)
+
 		echo "Unknown argument: $1"
 		 echo "-h for help";
 		exit 1
