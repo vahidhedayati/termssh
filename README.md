@@ -5,6 +5,10 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
  -f filename  |  to connect to servers in a filename 
 
  -a {env} {apptypes} {service_type}   | to autodiscover servers and make layouts. 
+ 
+ -ad apache04[d-g]gw | to auto discover hostnames of apache04dgw so apache04egw .. apache04ggw
+ 
+ -ad apache[03-10]gw | to auto discover hostnames of apache03gw so apache04gw .. apache10gw
 
  -l {env} {apptypes} {service_type}   | to TEST autodiscovery of servers and show what servers are being generated
  
@@ -102,6 +106,8 @@ This will read each value in the webservers.txt file  and create a layout called
 
 ## 3. Auto discovery method:
 
+Auto discover method 1 - a :
+
 There is a large segment at the top of the code to allow you to configure this section, to be honest I have worked in quite a few places and naming conventions vary hugely so I am afraid you may need to get hands dirty and hack the code around a bit to auto discover for you, my advice is to tweak sections that deals with auto discovery:
 
 -a {environment} {app_types_first_chars} {app_end_naming}
@@ -118,13 +124,19 @@ so
 
 As I have said this segment is specific to current environment and you will need to really have a go if you want to sit back and auto discover stuff
 
-AUTO DISCOVER
+Auto discover method 1 -a
 
 # termssh -r -w 4 -a prod ta ml 
 
 {which will rediscover 4 windows per tab and load londonstct01{a-z}ml and londonsapa01{a-z}ml mail servers so long as it found them
 
-Connection / Removal of existing layouts
+
+Auto discover method 2 -ad
+
+# termssh -r -w 4 -ad mx[1-5]xml - this will do a lookup against mx1xml to mx5xml if existant it will connect to them
+
+
+## Connection / Removal of existing layouts
 
 # termssh -c
 
