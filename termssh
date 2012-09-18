@@ -243,6 +243,52 @@ function validate_servers() {
 }
 #############################################################################################
 
+#############################################################################################
+# This  validate servers is the core of auto discovery 2 known as -ad - 
+# enable debug at the top of the script to get more verbosity with -ad
+
+
+function validate_servers2() {
+   > $FILE
+   if [[ $input =~ \[ ]];then
+     s="["
+     f="]"
+     host_start=`echo $input|awk -F"[" '{print $1}'`
+     host_end=`echo $input|awk -F"]" '{print $2}'`
+     start=`awk -v a="$input" -v b="$s" 'BEGIN{print index(a,b)}'`
+     fin=`awk -v a="$input" -v b="$f" 'BEGIN{print index(a,b)}'`
+
+     vals=`expr $fin - $start`
+     ((start++))
+     ((vals--))
+     ((fin++))
+     in1=`echo $input| awk -v s=$start -v f=$vals  '{ print substr( $0, s($0),f($0) ) }'`
+     #echo $input| awk -v s=$start  -v f=$fin '{ print substr( $0, s($0),length($0)-(f) ) }'
+
+     val1=`echo $in1|awk -F"\-" '{print $1}'`
+     val2=`echo $in1|awk -F"\-" '{print $2}'`
+     layout=$host_start""$in1""$host_end;
+     for index in $(eval echo {$val1..$val2})
+     do
+          #echo $host_start$index$host_end
+          server="$host_start$index$host_end"
+                if [ $DEBUG -ge 1 ]; then
+                        echo  "Current server: $server "
+                fi
+                check_method;
+
+     done
+     if [ $DEBUG -ge 1 ]; then
+       echo  "_________________________________________________"
+       echo  "CONNECTIONS WILL BE MADE TO:"
+       echo  "_________________________________________________"
+       cat $FILE
+     fi
+  fi
+}
+
+
+
 
 #############################################################################################
 #SERVER CHECK METHODS
@@ -1078,6 +1124,20 @@ while test -n "$1"; do
 		validate_servers;
 		exit 0;
             ;;
+         --autodiscover2|-ad)
+                USERCHOICE="AD"
+                input=$2;
+                if [ "$input" == "" ];then
+                        echo "\-h for help";
+                        exit 1;
+                fi
+
+                validate_servers2;
+                set_terminator;
+                layout=${layout//[[:space:]]}
+                terminator -l "$layout"&
+                exit;
+        ;;
         --file|-f)
 		USERCHOICE="F"
 		FILE=$2
