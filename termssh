@@ -30,6 +30,15 @@
 #  -r  remove layout i.e. current layout being generated - refresh its config
 #  -w 2/4/8 windows can be defined to open windows per tab.
 # - c to connect -d to remove existing layout
+# -n "my_gateway_mysql" sets the layout name as it  in speech marks if it has spaces
+# -s "gateway-(lon|gla)[01-02] myql[01-03] apache02"    in speech marks
+# or 
+# -f ./path/to/file.txt - can contain brace expansion
+# or
+# -a prod ta ml  where ml is server ending ta is tomcat apache and prod 
+# is part of server naming convention defined within the script
+# -a was original method of auto discovery however -a with brace expansion 
+# will auto discover so long as you provide correct naming with brackets.
 ##############################################################################
 
 
@@ -117,6 +126,15 @@ FILE="/tmp/terminator-hosts-"$userid".collect";
 # Environment variables  for auto discovery
 # Initial script built to put for example:
 # an input of: -a prod at ce cex
+
+# TO POINT OUT THIS IS A LITTLE OBSOLETE NOW 
+# USING input of -n "my_gateway_mysql" -s "gateway-(lon|gla)[01-02] myql[01-03]"
+# will connect to all servers named :
+# gateway-lon-01 gateway-lon-02 gateway-gla-01 gateway-gla-02 mysql-01 mysql-03 mysql-03
+# Feel free to modify input to match your naming convention
+# -n to set layout name - this option can be used with any of the other methods
+# This format of input is also supported with a file input of -f
+
 
 ####################################
 # $prod_location + $apache_convention + $prod_env + [a-z] + {server_types last input values}
@@ -242,50 +260,6 @@ function validate_servers() {
    fi
 }
 #############################################################################################
-
-#############################################################################################
-# This  validate servers is the core of auto discovery 2 known as -ad - 
-# enable debug at the top of the script to get more verbosity with -ad
-
-
-function validate_servers2() {
-   > $FILE
-   if [[ $input =~ \[ ]];then
-     s="["
-     f="]"
-     host_start=`echo $input|awk -F"[" '{print $1}'`
-     host_end=`echo $input|awk -F"]" '{print $2}'`
-     start=`awk -v a="$input" -v b="$s" 'BEGIN{print index(a,b)}'`
-     fin=`awk -v a="$input" -v b="$f" 'BEGIN{print index(a,b)}'`
-
-     vals=`expr $fin - $start`
-     ((start++))
-     ((vals--))
-     ((fin++))
-     in1=`echo $input| awk -v s=$start -v f=$vals  '{ print substr( $0, s($0),f($0) ) }'`
-     #echo $input| awk -v s=$start  -v f=$fin '{ print substr( $0, s($0),length($0)-(f) ) }'
-
-     val1=`echo $in1|awk -F"\-" '{print $1}'`
-     val2=`echo $in1|awk -F"\-" '{print $2}'`
-     layout=$host_start""$in1""$host_end;
-     for index in $(eval echo {$val1..$val2})
-     do
-          #echo $host_start$index$host_end
-          server="$host_start$index$host_end"
-                if [ $DEBUG -ge 1 ]; then
-                        echo  "Current server: $server "
-                fi
-                check_method;
-
-     done
-     if [ $DEBUG -ge 1 ]; then
-       echo  "_________________________________________________"
-       echo  "CONNECTIONS WILL BE MADE TO:"
-       echo  "_________________________________________________"
-       cat $FILE
-     fi
-  fi
-}
 
 
 #############################################################################################
@@ -538,19 +512,9 @@ function delete_existing_layout() {
 # processed by set_terminator like -f {file} option
 function read_cli_servers() { 
 >$FILE
-OLDIFS=$IFS;
-IFS=" ,"
-i=0
-for val in ${servernames}
+for val in `echo $servernames`
 do
-  i=$((++i))
-  eval var${i}="${val}"
-done
-IFS=$OLDIFS;
-for ((j=1;j<=i;++j))
-do
-  name="var${j}"
-  echo ${!name} >> $FILE
+	echo $val >> $FILE
 done
 
 
@@ -622,7 +586,9 @@ function process_config() {
 #-x numeric value 
 # so for reach server how many times to open a connection 
 # this function repeats server reconnections
-
+# this goes through FILE and if there is any brace expansion to be done 
+# if it finds it expands and servers are returned with bloated server list
+#############################################################################################
 function check_reconnection() { 
   local value=$reconnect;
     if [ "$value" == "" ]; then
@@ -635,24 +601,31 @@ function check_reconnection() {
 	  for ((i=0; i < $value; i++)) 
 	   do
 		((j++))
-		for servers in `cat $FILE`
+		for current_server in `cat $FILE`
 		do
-		   set_grouping
-		    if [  "$groupname" !=  "" ];then
-			if [ $DEBUG -ge 1 ];then
-			  echo "FOUND $groupname"
-			  echo $servers"|"$groupname"-"$j   $FILE.tmp
-			fi
-			echo $servers"|"$groupname"-"$j >> $FILE.tmp
-		    else
-			if [ $DEBUG -ge 1 ];then
-			   echo "No group name found for $servers - either does not match server convention at top of script"
-                           echo "or : AUTO_GROUPING is set to 0 and -g is not used in option given"
-			   echo $servers $FILE.tmp
-			fi
-			echo $servers >> $FILE.tmp
-		    fi
-		done
+
+		    brace_expansion=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s:\[:{:g; s:\]:}:g; s:-:\.\.:g; s/^//;s/$//'`
+		    servers_layout=`echo $current_server|sed 's:(:_:g; s:):_:g; s:|:_:g; s:\[:_:g; s:\]:_:g; s:-:_:g; s/^//;s/$//'`
+		    for servers in `(eval echo $brace_expansion)`
+		    do
+		      input_layout=$input_layout$server_layout
+		      set_grouping;
+		      if [  "$groupname" !=  "" ];then
+			  if [ $DEBUG -ge 1 ];then
+			    echo "FOUND $groupname"
+			    echo $servers"|"$groupname"-"$j   $FILE.tmp
+			  fi
+			  echo $servers"|"$groupname"-"$j >> $FILE.tmp
+		      else
+			  if [ $DEBUG -ge 1 ];then
+			    echo "No group name found for $servers - either does not match server convention at top of script"
+			    echo "or : AUTO_GROUPING is set to 0 and -g is not used in option given"
+			    echo $servers $FILE.tmp
+			  fi
+			  echo $servers >> $FILE.tmp
+		      fi
+		  done
+	      done
 	    done
 	    FILE=$FILE.tmp
 	   fi    
@@ -670,14 +643,14 @@ function check_reconnection() {
 function set_terminator() { 
 set_resolution;
 	set_windows;
-	
 	if [ "$USERCHOICE" == "F" ];then
 	  layabout=`echo $FILE |awk -F"/" '{print $NF}'|awk -F"." '{print $1}'`
 	  layout=$layabout"_"$WINDOWS
 	elif [ "$USERCHOICE" == "A" ]; then
 	  layout=$environment"_"$apptype"_"$conapps"_"$WINDOWS
 	elif [ "$USERCHOICE" == "I" ]; then
-	  layout=$servernames"_"$WINDOWS	
+	  #layout=$servernames"_"$WINDOWS	
+	  layout=$input_layout"_"$WINDOWS	
 	else
 	  layout="layout_"$WINDOWS
 	fi
@@ -685,6 +658,9 @@ set_resolution;
 		layout="test_"$layout
 	fi
 
+        if [ "$DEFINED_LAYOUT" != "" ]; then
+	  layout=$DEFINED_LAYOUT
+	fi
 	#changed from asking to giving -r option which sets auto removal
 
 	if [ $REMOVE_LAYOUT -ge 1 ] && [ "$layout" != "" ];then
@@ -985,9 +961,20 @@ function usage() {
   echo -e "-g | --group  				|  groups server as per naming set_apptype, Override AUTO_GROUPING_ENABLED=0"
   echo -e "-w  | --windows  [2/4/8 ]  			| -w followed by 2 or 4 or 8 windows per tab"
   echo -e "-x  | --times  [1-10 ]  			| -x followed by 1 to any number above - reconnect value per server"
+  echo -e "-n  | --layoutname  \"something or another\" 	| -n followed by a layout name in speech marks if it has spaces"
   colourit red  "Followed by either:"
-  echo -e "-s  | --servers |[s1,s2,s3]			| where s1,s2,s3 is server name seperated by commas"
+  echo -e "-s  | --servers | \"apache01 mysql[02-05][a-j] gateway(a|b)[01-02] oracle02\"	| must be in speech marks if regex input."
+  echo -e "  This will connect to initial server of apache01 then also connect to mysql02 to 05 a j so mysql02a - mysql05-j every combination"
+  echo -e  " followed by gatewaya01 gatewaya01 gatewaya02 gatewayb01 gatewayb02 finally oracle02 "
+  echo -e "You may use round brackets to look for either pattern and square brackets for wild card such as d-h or 5-10 which it will then go through this loop"
+  echo;
   echo -e "-f  | --file [./mail.txt]			| where mail.txt contains list of mail servers"
+  echo -e "Typical file could be single server names or like above brace expansion / regex : "
+  echo -e "one server per line it can be either something like:"
+  echo -e "mail01"
+  echo -e "mysql-(lon|gla)-[01-03]"
+  echo -e "where it will connect to simple host as well as match all hosts of mysql-lon-01 mysql-gla-01 mysql-lon-02 mysql-gla-02 mysql-lon-03 mysql-gla-03"
+  echo;
   echo -e "-a  | --autodiscover [val1] [val2] [val3]	| explained in detail below" 
   echo;
   colourit black "Usage: `basename $0`  [-h {for help}]  | [-c {connect to existing layouts} ] |  [-d {delete existing layout} ]" 
@@ -997,7 +984,9 @@ function usage() {
   colourit black "Usage: `basename $0`  [-r  remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-s {server1,server2,server3} ";
 
   echo;colourit red "Command Line Input CLI  connect example:";
-  colourit black "EXAMPLE 1:  `basename $0` -fs -x 2 -w 8 -s server1,server2,server4..server8     {Fullscreen mode, 8 windows per tab connect twice per server to comma seperated list of servers given  = 16 windows 2 tabs } "
+  colourit black "EXAMPLE 1:  `basename $0` -fs -x 2 -w 8 -n custom_server1 -s \"(apache|mysql)-[01-03][a-b]   gateway[01-03]\"  {Fullscreen mode, 8 windows per tab connect twice per server brace expand patterns and connect to"
+     colourit black "  apache01a apache01b mysql01a mysql01b ... mysql01-03a/b servers as well as gateway01 gateway02 gateway03 set the layout name to custom_server1 for reconnection" 
+
   colourit black "EXAMPLE 2:  `basename $0` -r -w 2 -x 3 -s montct01,monapa01  {Remove layout 2 windows per tab X 3 comma seperated list i.e. 3 times to monstct01 and 3 times to monsapa01  2 per tab = 3 tabs } "
   
 
@@ -1060,6 +1049,7 @@ function colourit() {
 #############################################################################################
 
 # Check if the logged in user is root and give option to exit code
+function check_root() { 
 if [ $userid -eq 0 ];then
  colourit red "Warning you are logged in as root and about to ssh to hosts continue (y/n)?"
  read userinput;
@@ -1068,6 +1058,7 @@ if [ $userid -eq 0 ];then
  fi
 fi
 
+}
 
 
 
@@ -1120,12 +1111,14 @@ while test -n "$1"; do
 		reconnect=$2;
 		shift;
 	    ;;
+         --layoutname|-n)
+		DEFINED_LAYOUT=$2;
+		shift;
+	    ;;
          --servers|-s)
                 USERCHOICE="I"
                 servernames=$2
                 read_cli_servers;
-                #set_terminator;
-                #terminator -l $layout&
                 terminator_connect;
                 exit 0;
             ;;
@@ -1145,24 +1138,9 @@ while test -n "$1"; do
                 exit 0;
             ;;
 
-        --autodiscover2|-ad)
-                USERCHOICE="AD"
-                input=$2;
-                if [ "$input" == "" ];then
-                        echo "\-h for help";
-                        exit 1;
-                fi
-
-                validate_servers2;
-                terminator_connect;
-                exit;
-        ;;
         --file|-f)
                 USERCHOICE="F"
                 FILE=$2
-                #set_terminator;
-                #layout=${layout//[[:space:]]}
-                #terminator -l "$layout"&
                 terminator_connect;
                 exit 0;
             ;;
@@ -1177,12 +1155,7 @@ while test -n "$1"; do
                     usage
                     exit
                 fi
-        #       DEBUG=1;
                 validate_servers;
-                #check_method;
-                #set_terminator;
-                #layout=${layout//[[:space:]]}
-                #terminator -l "$layout"&
                 terminator_connect;
                 exit 0
             ;;
