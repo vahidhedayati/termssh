@@ -22,23 +22,20 @@
 ##############################################################################
 #  Script to manage/automate terminator layouts / connections
 #  You can either connect to servers via a text file -f {filename}
-#  or via autodiscovery -a prod tamjo app1 app2 .. app6   
+#  or via autodiscovery us
 #  The auto discover segment will need adjustment and may need to be modified 
 #  to work  with the server labelling within your organisation
 #
 #  -fs fullscreen mode if not set to 1 below
 #  -r  remove layout i.e. current layout being generated - refresh its config
 #  -w 2/4/8 windows can be defined to open windows per tab.
-# - c to connect -d to remove existing layout
-# -n "my_gateway_mysql" sets the layout name as it  in speech marks if it has spaces
-# -s "gateway-(lon|gla)[01-02] myql[01-03] apache02"    in speech marks
-# or 
+#  -c to connect -d to remove existing layout
+#  -n "my_gateway_mysql" sets the layout name as it  in speech marks if it has spaces
+#  -s "gateway-(lon|gla)[01-02] myql[01-03] apache02"    always in speech marks, space seperated list
+#  or 
 # -f ./path/to/file.txt - can contain brace expansion
-# or
-# -a prod ta ml  where ml is server ending ta is tomcat apache and prod 
-# is part of server naming convention defined within the script
-# -a was original method of auto discovery however -a with brace expansion 
-# will auto discover so long as you provide correct naming with brackets.
+#  or
+#  -a prod tamjo app1 app2 .. app6   
 ##############################################################################
 
 
