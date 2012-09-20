@@ -167,57 +167,119 @@ If all auto discovery found or file contains 1,2,3 or 4 servers it will still cr
 
 
 options: 
+
 -r  | --removelayout                            |  remove layout and refresh it
+
 -fs | --fullscreen                              |  start session in full screen mode, Override FULL_SCREEN_MODE=0
+
 -g | --group                            |  groups server as per naming set_apptype, Override AUTO_GROUPING_ENABLED=0
+
 -w  | --windows  [2/4/8 ]                       | -w followed by 2 or 4 or 8 windows per tab
+
 -x  | --times  [1-10 ]                          | -x followed by 1 to any number above - reconnect value per server
+
 -n  | --layoutname  "something or another"      | -n followed by a layout name in speech marks if it has spaces
+
 Followed by either:
+
 -s  | --servers | "apache01 mysql[02-05][a-j] gateway(a|b)[01-02] oracle02"     | must be in speech marks if regex input.
   This will connect to initial server of apache01 then also connect to mysql02 to 05 a j so mysql02a - mysql05-j every combination
  followed by gatewaya01 gatewaya01 gatewaya02 gatewayb01 gatewayb02 finally oracle02 
+
+
 You may use round brackets to look for either pattern and square brackets for wild card such as d-h or 5-10 which it will then go through this loop
 
+
 -f  | --file [./mail.txt]                       | where mail.txt contains list of mail servers
+
 Typical file could be single server names or like above brace expansion / regex : 
 one server per line it can be either something like:
+
 mail01
+
 mysql-(lon|gla)-[01-03]
+
+
 where it will connect to simple host as well as match all hosts of mysql-lon-01 mysql-gla-01 mysql-lon-02 mysql-gla-02 mysql-lon-03 mysql-gla-03
+
 
 -a  | --autodiscover [val1] [val2] [val3]       | explained in detail below
 
+
 Usage: termssh [-h {for help}] | [-c {connect to existing layouts} ] | [-d {delete existing layout} ]
+
 Usage: termssh [-l {for list servers} followed by prod/stage/uat atjmo app1 app2 app3 app4 app5 app6 ] 
-Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my layout name"] [-f {for file} filename ]
-Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my layout name2"] [-a {for autodiscovery} prod/stage/uat atjmo app1..app6 ] 
-Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my layout name3"] [-s {"apache01 mysql-(lon|gla)[01-03] gateway-(prod|uat)-[01-03]"} 
+
+Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my file_layout name"] [-f {for file} filename ]
+
+Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my ad_layout name"] [-a {for autodiscovery} prod/stage/uat atjmo app1..app6 ] 
+
+Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my input_layout name"] [-s {"server1 server[2-3] (web|gateway)[01-03]asd" } 
+
+
 
 Command Line Input CLI connect example:
+
+
+
 EXAMPLE 1: termssh -fs -x 2 -w 8 -n custom_server1 -s "(apache|mysql)-[01-03][a-b] gateway[01-03]" {Fullscreen mode, 8 windows per tab connect twice per server brace expand patterns and connect to
- apache01a apache01b mysql01a mysql01b ... mysql01-03a/b servers as well as gateway01 gateway02 gateway03 set the layout name to custom_server1 for reconnection
+
+apache01a apache01b mysql01a mysql01b ... mysql01-03a/b servers as well as gateway01 gateway02 gateway03 set the layout name to custom_server1 for reconnection
+
 EXAMPLE 2: termssh -r -w 2 -x 3 -s montct01,monapa01 {Remove layout 2 windows per tab X 3 comma seperated list i.e. 3 times to monstct01 and 3 times to monsapa01 2 per tab = 3 tabs } 
 
+
+
 File connect example:
+
+
+
 EXAMPLE 3: termssh -w 8 -f ./servers.txt {Go through servers.txt and connect to all with 8 windows per tab } 
+
 EXAMPLE 4: termssh -r -w 8 -f ./servers.txt {Remove layout go through file and connect 8 windows per tab} 
 
+
+
 Auto discovery connect examples:
+
+
+
 termssh -a {environment} {apptype} {applications}
+
 {environment} can be: prod/stage/uat
+
 {apptype} can be: matjo includes msyql/tomcat/apache/jboss/oracle use 1 or all or a combination
+
 {applications} are seperated by spaces i.e. gw td iw and so forth up to 6 environements accepted
 
+
+
 EXAMPLE 5: termssh -r -w 8 -fs -x 3 -a prod at td {Remove layout, rediscover and connect to londons(tct/apa)01[a-z]{td|at} 3 times, 8 windows per tab, fullscreen}
+
 EXAMPLE 6: termssh -w 8 -a prod gw {Connect to londons(apa/jbs)01[a-z]gw and try for 8 windows per tab}
+
 EXAMPLE 7: termssh -x 2 -a prod at bh gw {Connect to londons(apa/tct)01[a-z]bh + londons(apa/tct)01[a-z]gw twice per server}
 
+
+
+
 Auto discovery list example:
+
+
 EXAMPLE 8: termssh -l prod at sd fg {List all servers connectable on londons(apa/tct)01[a-z]sd + londons(apa/tct)01[a-z]fg} 
 
+
+
 Existing Layout connection:
+
+
+
 EXAMPLE 9: termssh -c {List existing layouts and give u numeric option to connect to them} 
 
+
 Removal of existing layout:
+
+
+
 EXAMPLE 10: termssh -d {List existing layouts and give u numeric option to remove 1} 
+
