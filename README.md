@@ -27,10 +27,10 @@ To understand the power of grouping -g simply place entire code in DEBUG mode, a
 Save script then on command line type in:
 
 
-# termssh -r -w 8 -g -n "apache-gateway-mysql" -x 2 -s "gw-(lon|gla)[01-02] mql[01-03] apache01"
+# termssh -r -w 8 -g -n "agm1" -x 2 -s "gw-(lon|gla)[01-02] mql[01-03] apache01"
 
 This will open 8 window terminator session with apaches in group 
-The layout name will be called apache-gateway-mysql for future connections
+The layout name will be called agm1 for future connections
 The naming convention matches the scripts defined naming convention i.e. gw mql apa which then the -g grouping kicks
 in and groups servers per app type
 It will connect twice per server -x 2
