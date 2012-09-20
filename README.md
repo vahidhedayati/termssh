@@ -1,26 +1,25 @@
 termssh is a script to create and maintain gnome terminator layouts for ssh access either via:
 
- -s s1,s2,s3,s4  |  where -s if followed by server names comma seperated
-
- -f filename  |  to connect to servers in a filename 
-
- -a {env} {apptypes} {service_type}   | to autodiscover servers and make layouts. 
- 
- -ad apache04[d-g]gw | to auto discover hostnames of apache04dgw so apache04egw .. apache04ggw
- 
- -ad apache[03-10]gw | to auto discover hostnames of apache03gw so apache04gw .. apache10gw
-
- -l {env} {apptypes} {service_type}   | to TEST autodiscovery of servers and show what servers are being generated
- 
  -g    | Auto groups servers per apptype conventions,
 
  -fs   | Full screen options, 
 
  -w 8  | window per tab definition of 2 4 or 8 windows per tab 
 
+ -n "my layout" | this will set the layout name to a familiar name of your choice for future connections
+ 
+ -s "gateway-(lon|gla)[01-02] myql[01-03] apache01"    | in speech marks space seperated list
+ 
+  -f filename  |  to connect to servers in a filename, can contain wild card naming like above
 
+ -a {env} {apptypes} {service_type}   | to autodiscover servers and make layouts. 
+ 
+ 
+ -l {env} {apptypes} {service_type}   | to TEST autodiscovery of servers and show what servers are being generated
+ 
+ -c to reconnect to existing layout | existing layouts listed and you can numerically choose which layout
+ 
 
-Will need configuration and tweaking if you wish for auto discovery to work in your work place, For now you can either put one host per ine into a text file and call it something like web.txt mail.txt or define servers comma seperated after -s argument
 
 ## Testing termssh 
 
@@ -28,17 +27,22 @@ To understand the power of grouping -g simply place entire code in DEBUG mode, a
 Save script then on command line type in:
 
 
-# termssh -r -w 8 -g -s apa01,apa02,apa03,apa04,tct01,tct02,tct03,tct04
+# termssh -r -w 8 -g -n "apache-gateway-mysql" -x 2 -s "gw-(lon|gla)[01-02] mql[01-03] apache01"
 
 This will open 8 window terminator session with apaches in group 
-so when you type in a command to one apache all servers get the command and same for the tct tomcat group
+The layout name will be called apache-gateway-mysql for future connections
+The naming convention matches the scripts defined naming convention i.e. gw mql apa which then the -g grouping kicks
+in and groups servers per app type
+It will connect twice per server -x 2
+Finally pattern match servers called gw-lon-01 gw-gla-01 gw-lon-02 gw-gla-02 mql01 mql02 mql03 and finally apache01
+and then check if their available if so 2 terminator connections per host will be launched with 8 windows per tab 
 
 Once you have seen this working you can look further in the script and see I have defined group names as per application type i.e. 2nd input of auto discovery.
 In this instance my server names matched that naming convention which then got processed by group function below it.
 
 Whilst DEBUG=1 at top of termssh
 
-# termssh -r -w 4 -x 2 -g -s apa01,apa02
+# termssh -r -w 4 -x 2 -g -s "apa[01-02]"
 
 This will launch -x 2 i.e. connections to apa01 and apa02 twice for each host.
 The grouping works out you have two connections to the host so assigns group-1 to apa01 apa02 first time around
@@ -63,8 +67,8 @@ with our without DEBUG mode being enabled to understand how the auto discovery w
 ## 1. INPUT SERVERS
 Enable debug mode at top of the script and try out:
 
-# termssh -r -w 8 -x 2 -fs -g -s apa01,apa02,apa03,apa04,mql01,mql02,gw01,gw02   
-{comma seperated list of servers}
+# termssh -r -n "apa-gw-mql" -w 8 -x 2 -fs -g -s "apa[01-04] mql[01-02] gw[01-02]" space seperated list
+
 then type in a command into any of the apache-1 sessions.
 
 This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen and will autogroup (-g)
@@ -78,10 +82,10 @@ This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means
 
  apache02 connection 2 will be part of apache-2 group
 
-
+layout name for future connection:  apa-gw-mql
 ## 2. File method:
 
-# termssh -r -w 8 -f ./mailservers.txt
+# termssh -r -w 8 -n "my mail servers" -f ./mailservers.txt
 
 -f option to call the file and create layouts layout names will be the filenames so ensure you use different file names each time a new group is created.
 
@@ -92,6 +96,7 @@ This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means
 This will read each value in the filename and create a layout called mailservers which contains each server - 8 windows per tab
 to reconnect in the future either run termssh -c or rerun above which locates existing layouts and auto connects|
 
+layout name for future connection:  my mail servers
 
 # termssh -r -w 8 -x 2  -fs  -f ./webservers.txt
 
@@ -126,9 +131,11 @@ As I have said this segment is specific to current environment and you will need
 
 Auto discover method 1 -a
 
-# termssh -r -w 4 -a prod ta ml 
+# termssh -r -w 4 -n "prod_mail" -a prod ta ml 
 
 {which will rediscover 4 windows per tab and load londonstct01{a-z}ml and londonsapa01{a-z}ml mail servers so long as it found them
+
+This will now be called layout prod_mail
 
 
 Auto discover method 2 -ad
