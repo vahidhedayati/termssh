@@ -190,23 +190,20 @@ where it will connect to simple host as well as match all hosts of mysql-lon-01 
 
 Usage: termssh [-h {for help}] | [-c {connect to existing layouts} ] | [-d {delete existing layout} ]
 Usage: termssh [-l {for list servers} followed by prod/stage/uat atjmo app1 app2 app3 app4 app5 app6 ] 
-Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my file_layout name"] [-f {for file} filename ]
-Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my ad_layout name"] [-a {for autodiscovery} prod/stage/uat atjmo app1..app6 ] 
-Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my input_layout name"] [-s {"server1 server[2-3] (web|gateway)[01-03]asd" } 
+Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my layout name"] [-f {for file} filename ]
+Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my layout name2"] [-a {for autodiscovery} prod/stage/uat atjmo app1..app6 ] 
+Usage: termssh [-r remove layout and recreate ] [-fs {fullscreen mode} ] [-w {windows} 2/4/8] [-n "my layout name3"] [-s {"apache01 mysql-(lon|gla)[01-03] gateway-(prod|uat)-[01-03]"} 
 
 Command Line Input CLI connect example:
-
 EXAMPLE 1: termssh -fs -x 2 -w 8 -n custom_server1 -s "(apache|mysql)-[01-03][a-b] gateway[01-03]" {Fullscreen mode, 8 windows per tab connect twice per server brace expand patterns and connect to
  apache01a apache01b mysql01a mysql01b ... mysql01-03a/b servers as well as gateway01 gateway02 gateway03 set the layout name to custom_server1 for reconnection
 EXAMPLE 2: termssh -r -w 2 -x 3 -s montct01,monapa01 {Remove layout 2 windows per tab X 3 comma seperated list i.e. 3 times to monstct01 and 3 times to monsapa01 2 per tab = 3 tabs } 
 
 File connect example:
-
 EXAMPLE 3: termssh -w 8 -f ./servers.txt {Go through servers.txt and connect to all with 8 windows per tab } 
 EXAMPLE 4: termssh -r -w 8 -f ./servers.txt {Remove layout go through file and connect 8 windows per tab} 
 
 Auto discovery connect examples:
-
 termssh -a {environment} {apptype} {applications}
 {environment} can be: prod/stage/uat
 {apptype} can be: matjo includes msyql/tomcat/apache/jboss/oracle use 1 or all or a combination
@@ -217,13 +214,10 @@ EXAMPLE 6: termssh -w 8 -a prod gw {Connect to londons(apa/jbs)01[a-z]gw and try
 EXAMPLE 7: termssh -x 2 -a prod at bh gw {Connect to londons(apa/tct)01[a-z]bh + londons(apa/tct)01[a-z]gw twice per server}
 
 Auto discovery list example:
-
 EXAMPLE 8: termssh -l prod at sd fg {List all servers connectable on londons(apa/tct)01[a-z]sd + londons(apa/tct)01[a-z]fg} 
 
 Existing Layout connection:
-
 EXAMPLE 9: termssh -c {List existing layouts and give u numeric option to connect to them} 
 
 Removal of existing layout:
-
 EXAMPLE 10: termssh -d {List existing layouts and give u numeric option to remove 1} 
