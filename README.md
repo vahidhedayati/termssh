@@ -173,7 +173,7 @@ loca(l|h)[h-s]ost
 
 
 
-## 3. Auto discovery method:
+## 3. Auto discovery -a explained further:
 
 Auto discover method 1 - a :
 
@@ -193,19 +193,13 @@ so
 
 As I have said this segment is specific to current environment and you will need to really have a go if you want to sit back and auto discover stuff
 
-Auto discover method 1 -a
+Auto discover -a examples
 
 # termssh -r -w 4 -n "prod_mail" -a prod ta ml 
 
 {which will rediscover 4 windows per tab and load londonstct01{a-z}ml and londonsapa01{a-z}ml mail servers so long as it found them
 
 This will now be called layout prod_mail
-
-
-Auto discover method 2 -ad
-
-# termssh -r -w 4 -ad mx[1-5]xml - this will do a lookup against mx1xml to mx5xml if existant it will connect to them
-
 
 ## Connection / Removal of existing layouts
 
