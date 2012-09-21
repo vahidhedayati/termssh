@@ -609,48 +609,49 @@ function check_reconnection() {
     if [ "$value" == "" ]; then
 	value=$DEFAULT_CONNECTIONS;
     fi
-	  >$FILE.tmp
 	if ((value)) 2>/dev/null; then
 	  value=$((value));
 	  j=0;
-			 FILE1=$FILE.tmp1
+		> $FILE.tmp
+		> $FILE.tmp1
+			FILE1=$FILE;
+			FILE=$FILE.tmp1
+		> $FILE;
+		> $FILE1.tmp;
 	  for ((i=0; i < $value; i++)) 
 	   do
 		((j++))
-		for current_server in `cat $FILE`
+		for current_server in `cat $FILE1`
 		do
 		    brace_expansion=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s:\[:{:g; s:\]:}:g; s:-:\.\.:g; s/^//;s/$//'`
 		    servers_layout=`echo $current_server|sed 's:(:_:g; s:):_:g; s:|:_:g; s:\[:_:g; s:\]:_:g; s:-:_:g; s/^//;s/$//'`
-			FILE=$FILE1;
 		    for server in `(eval echo $brace_expansion)`
 		    do
-			servers=$server;
 		 	check_method;
 		    done
+		done
 		   for servers in `cat $FILE`
 		    do
-
 		     	 input_layout=$input_layout$server_layout
 		      	set_grouping;
 		      	if [  "$groupname" !=  "" ];then
 			  if [ $DEBUG -ge 1 ];then
 			    echo "FOUND $groupname"
-			    echo $servers"|"$groupname"-"$j   $FILE.tmp
+			    echo $servers"|"$groupname"-"$j   $FILE1.tmp
 			  fi
-			  echo $servers"|"$groupname"-"$j >> $FILE.tmp
+			  echo $servers"|"$groupname"-"$j >> $FILE1.tmp
 		      else
 			  if [ $DEBUG -ge 1 ];then
 			    echo "No group name found for $servers - either does not match server convention at top of script"
 			    echo "or : AUTO_GROUPING is set to 0 and -g is not used in option given"
-			    echo $servers $FILE.tmp
+			    echo $servers $FILE1.tmp
 			  fi
-			  echo $servers >> $FILE.tmp
+			  echo $servers >> $FILE1.tmp
 		      fi
 
 		  done
-	      done
 	    done
-	    FILE=$FILE.tmp
+	    FILE=$FILE1.tmp
 	   fi    
 }
 
@@ -946,7 +947,7 @@ function create_terminals() {
 				if [ "$VPN_SERVER" == "" ]; then 
 			  		command1="command = ssh $currserver1\n"
 				else
-					command1="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver1\n"
+					command1="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver1\"\n"
 				fi
 			fi 
 			if [ "$currgroup1" != "" ];then 
@@ -960,7 +961,7 @@ function create_terminals() {
 				if [ "$VPN_SERVER" == "" ]; then 
                                         command2="command = ssh $currserver2\n"
                                 else
-                                        command2="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver2\n"
+                                        command2="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver2\"\n"
                                 fi
 
 			  #command2="command = ssh $currserver2\n"
