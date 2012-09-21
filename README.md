@@ -46,7 +46,7 @@ I would suggest for vpn to either use -f and have all servers listed in a text f
  for each host listed.
  
 
-## Normal pattern match using -s to define hosts - must be wrapped 
+## Normal pattern match using -s to define hosts - must be wrapped - Auto Discovers
 
 # termssh -r -w 8 -g -n "agm1" -x 2 -s "gw-(lon|gla)[01-02] mql[01-03] apache01"
 
@@ -74,6 +74,26 @@ and then restart a service by typing it to 2nd instance of apa01 which gets sent
 
 hope it makes sense.
 
+
+
+Enable debug mode at top of the script and try out:
+
+# termssh -r -n "apa-gw-mql" -w 8 -x 2 -fs -g -s "apa[01-04] mql[01-02] gw[01-02]" space seperated list
+
+then type in a command into any of the apache-1 sessions.
+
+This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen and will autogroup (-g)
+
+
+ apache01 connection 1 will be part of apache-1 group
+
+ apache01 connection 2 will be part of apache-2 group|
+
+ apache02 connection 1 will be part of apache-1 group
+
+ apache02 connection 2 will be part of apache-2 group
+
+layout name for future connection:  apa-gw-mql
 
 
 ## -s Example with extra verbosity:
@@ -109,7 +129,7 @@ Total servers 2 | Tabs required 1 | LAYOUT= bad ./termssh1.sh -c to reconnect
 
 
 
-##Auto Discover -a 
+## -a define env apptype appendname -Auto Discover 
 
 use: 
 # termssh -l prod t gw 
@@ -120,28 +140,7 @@ with our without DEBUG mode being enabled to understand how the auto discovery w
 
 
 
-
-
-## 1. INPUT SERVERS
-Enable debug mode at top of the script and try out:
-
-# termssh -r -n "apa-gw-mql" -w 8 -x 2 -fs -g -s "apa[01-04] mql[01-02] gw[01-02]" space seperated list
-
-then type in a command into any of the apache-1 sessions.
-
-This will -r remove layout -w 8 try for 8 windows  and because -x = 2 this means 4 servers twice which equals the 8 windows defined full screen and will autogroup (-g)
-
-
- apache01 connection 1 will be part of apache-1 group
-
- apache01 connection 2 will be part of apache-2 group|
-
- apache02 connection 1 will be part of apache-1 group
-
- apache02 connection 2 will be part of apache-2 group
-
-layout name for future connection:  apa-gw-mql
-## 2. File method:
+##  File method - Auto discover & pattern matches
 
 # termssh -r -w 8 -n "my mail servers" -f ./mailservers.txt
 
@@ -164,6 +163,13 @@ layout name for future connection:  my mail servers
 
 
 This will read each value in the webservers.txt file  and create a layout called webservers, it will then run through -x value and connect that many times to each host
+Servers can be a combination of specific names or pattern match :
+localhost
+
+localhost
+
+loca(l|h)[h-s]ost
+
 
 
 
