@@ -37,6 +37,7 @@ since if current connection requires a vpn to connect the script using nc will n
 thus pattern match will fail
 
  termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "local(h|i)os[s-t] local(h|i)os[s-t]"
+ 
 The above would probably fail - check_method at the top of script can be changed to ping so long as it can resolve short names locally
 I would suggest for vpn to either use -f and have all servers listed in a text file or do something like:
 
