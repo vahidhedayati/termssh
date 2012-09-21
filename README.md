@@ -13,43 +13,8 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
  -v hostname | this is the vpn hostname used to connect through 
 
  -s "gateway-(lon|gla)[01-02] myql[01-03] apache01"    | in speech marks space seperated list
-
-Here is an example with extra verbose to show how pattern match works:
-
- # termssh.sh -n "bad" -r  -s "local(h|i)os[s-t] local(h|i)os[s-t]"
  
- [[mylayer]]
-
-user you have issued -r : Layout bad has now been removed !!
-
-Will recreate bad 
-
-___ Blanked out tmp file /tmp/terminator-hosts-1000.collect.tmp
-
-___ localhoss
-
-___ localhost
-
-___ localioss
-
-___ localiost
-
-___ localhoss
-
-___ localhost
-
-___ localioss
-
-___ localiost
-
-Total servers 2 | Tabs required 1 | LAYOUT= bad ./termssh1.sh -c to reconnect
-
-
-
-
-
- 
-  -f filename  |  to connect to servers in a filename, can contain wild card naming like above
+ -f filename  |  to connect to servers in a filename, can contain wild card naming like above
 
  -a {env} {apptypes} {service_type}   | to autodiscover servers and make layouts. 
  
@@ -108,6 +73,43 @@ This means you can now type in for example tail -f /var/log/messages on one of t
 and then restart a service by typing it to 2nd instance of apa01 which gets sent to apa02 as part of group-2
 
 hope it makes sense.
+
+
+
+## -s Example with extra verbosity:
+
+ # termssh.sh -n "bad" -r  -s "local(h|i)os[s-t] local(h|i)os[s-t]"
+ 
+ [[mylayer]]
+
+user you have issued -r : Layout bad has now been removed !!
+
+Will recreate bad 
+
+___ Blanked out tmp file /tmp/terminator-hosts-1000.collect.tmp
+
+___ localhoss
+
+___ localhost
+
+___ localioss
+
+___ localiost
+
+___ localhoss
+
+___ localhost
+
+___ localioss
+
+___ localiost
+
+Total servers 2 | Tabs required 1 | LAYOUT= bad ./termssh1.sh -c to reconnect
+
+
+
+
+##Auto Discover -a 
 
 use: 
 # termssh -l prod t gw 
