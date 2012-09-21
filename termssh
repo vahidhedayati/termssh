@@ -183,7 +183,8 @@ oracle_group="oracle";
 # This is method to auto discover - you can change method to improve speed of discovery
 # querymethod choices are configured in function check_method : 
 # you can change to :
-# host nslookup dig shortdig netcat nc ping
+# host nslookup dig shortdig netcat nc ping disabled
+# disabled only suggested for vpn access
 
 querymethod="nc";
 #############################################################################################
@@ -296,6 +297,8 @@ function check_method()  {
 	dig +short $server | awk 'NR > 1 { exit } ; 1 2>&1|grep [1-9] > /dev/null'
       elif [ "$querymethod" == "ping" ]; then 
 	ping -c1 $server 2>&1|grep bytes > /dev/null
+      elif [ "$querymethod" == "disabled" ]; then 
+	echo "succeeded" > /dev/null
       else
 	nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null	
       fi
@@ -322,6 +325,8 @@ function check_function()  {
         dig +short $server | awk 'NR > 1 { exit } ; 1 2>&1|grep [1-9] > /dev/null'
       elif [ "$querymethod" == "ping" ]; then
         ping -c1 $server 2>&1|grep bytes > /dev/null
+      elif [ "$querymethod" == "disabled" ]; then 
+	echo "succeeded" > /dev/null
       else
         nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null
       fi
