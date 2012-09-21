@@ -81,6 +81,8 @@ I would suggest for vpn to either use -f and have all servers listed in a text f
  for each host listed.
  
 
+## Normal pattern match using -s to define hosts - must be wrapped 
+
 # termssh -r -w 8 -g -n "agm1" -x 2 -s "gw-(lon|gla)[01-02] mql[01-03] apache01"
 
 This will open 8 window terminator session with apaches in group 
