@@ -5,10 +5,49 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
  -fs   | Full screen options, 
 
  -w 8  | window per tab definition of 2 4 or 8 windows per tab 
-
+ 
  -n "my layout" | this will set the layout name to a familiar name of your choice for future connections
  
+ -vp 122 | This is for vpn users and this is what you define as your vpn port
+ 
+ -v hostname | this is the vpn hostname used to connect through 
+
  -s "gateway-(lon|gla)[01-02] myql[01-03] apache01"    | in speech marks space seperated list
+
+Here is an example with extra verbose to show how pattern match works:
+
+ # termssh.sh -n "bad" -r  -s "local(h|i)os[s-t] local(h|i)os[s-t]"
+ 
+ [[mylayer]]
+
+user you have issued -r : Layout bad has now been removed !!
+
+Will recreate bad 
+
+___ Blanked out tmp file /tmp/terminator-hosts-1000.collect.tmp
+
+___ localhoss
+
+___ localhost
+
+___ localioss
+
+___ localiost
+
+___ localhoss
+
+___ localhost
+
+___ localioss
+
+___ localiost
+
+Total servers 2 | Tabs required 1 | LAYOUT= bad ./termssh1.sh -c to reconnect
+
+
+
+
+
  
   -f filename  |  to connect to servers in a filename, can contain wild card naming like above
 
@@ -26,6 +65,21 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
 To understand the power of grouping -g simply place entire code in DEBUG mode, at the top of termssh script find DEBUG which is set to 0 change this to 1.
 Save script then on command line type in:
 
+
+## VPN Connections 
+This allows you to define a vpn host and port - the problem may come into effect for pattern match 
+since if current connection requires a vpn to connect the script using nc will not be able to catch port 22
+thus pattern match will fail
+
+# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "local(h|i)os[s-t] local(h|i)os[s-t]"
+The above would probably fail - check_method at the top of script can be changed to ping so long as it can resolve short names locally
+I would suggest for vpn to either use -f and have all servers listed in a text file or do something like:
+
+ # termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server1 server2 server3 server4"
+ 
+ This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server"
+ for each host listed.
+ 
 
 # termssh -r -w 8 -g -n "agm1" -x 2 -s "gw-(lon|gla)[01-02] mql[01-03] apache01"
 
