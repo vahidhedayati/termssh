@@ -36,14 +36,21 @@ This allows you to define a vpn host and port - the problem may come into effect
 since if current connection requires a vpn to connect the script using nc will not be able to catch port 22
 thus pattern match will fail
 
-# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "local(h|i)os[s-t] local(h|i)os[s-t]"
+ termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "local(h|i)os[s-t] local(h|i)os[s-t]"
 The above would probably fail - check_method at the top of script can be changed to ping so long as it can resolve short names locally
 I would suggest for vpn to either use -f and have all servers listed in a text file or do something like:
 
- # termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server1 server2 server3 server4"
+# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server1 server2 server3 server4"
  
  This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server"
- for each host listed.
+ for each host listed. 
+ There may still be issues with the check_method call so if nothing has connected edit the script and around line 189 look for and change to:
+ 
+ 
+ querymethod="disabled";
+ 
+ 
+ This should no longer try to validate server existance and thus the input for -s or withing file name must be phyiscal and alive server names
  
 
 ## Normal pattern match using -s to define hosts - must be wrapped - Auto Discovers
