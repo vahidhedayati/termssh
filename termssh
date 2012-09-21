@@ -46,7 +46,6 @@
 ###############################
 # If you are trying get auto discovery to work - more verbosity is given and connections are 
 # converted to local /bin/bash  command on local machine executing this script
-
 DEBUG=0;
 
 
@@ -220,7 +219,6 @@ function validate_servers() {
     do
 	#Set currapp as array value 
 	currapp=${apparray[index]}
-	#echo "___$currapp"
 	
 	if [ "$currapp" != "" ]; then 
 	     conapps=$conapps"_"$currapp;
@@ -301,13 +299,33 @@ function check_method()  {
       else
 	nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null	
       fi
-	
       if [ $? = 0 ]; then
          echo $server >> $FILE
       fi
 }
 #############################################################################################
 
+#SERVER CHECK METHODS
+function check_function()  {
+      #> $FILE
+      if [ "$querymethod" == "nc" ]; then
+          nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null
+      elif [ "$querymethod" == "netcat" ]; then
+          netcat -v  -w 1 $server -z 22 2>&1|grep succeeded >/dev/null
+      elif [ "$querymethod" == "host" ]; then
+          host $server | awk '/^[[:alnum:].-]+ has address/ { print $4 ; exit }' 2>&1|grep [1-9] > /dev/null
+      elif [ "$querymethod" == "nslookup" ]; then
+        nslookup $server | awk '/^Address: / { print $2 ; exit }'  2>&1|grep [1-9] > /dev/null
+      elif [ "$querymethod" == "dig" ]; then
+        dig  $server | awk '/^;; ANSWER SECTION:$/ { getline ; print $5 ; exit }'  2>&1|grep [1-9] > /dev/null
+      elif [ "$querymethod" == "shortdig" ]; then
+        dig +short $server | awk 'NR > 1 { exit } ; 1 2>&1|grep [1-9] > /dev/null'
+      elif [ "$querymethod" == "ping" ]; then
+        ping -c1 $server 2>&1|grep bytes > /dev/null
+      else
+        nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null
+      fi
+}
 
 
 #############################################################################################
@@ -595,19 +613,26 @@ function check_reconnection() {
 	if ((value)) 2>/dev/null; then
 	  value=$((value));
 	  j=0;
+			 FILE1=$FILE.tmp1
 	  for ((i=0; i < $value; i++)) 
 	   do
 		((j++))
 		for current_server in `cat $FILE`
 		do
-
 		    brace_expansion=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s:\[:{:g; s:\]:}:g; s:-:\.\.:g; s/^//;s/$//'`
 		    servers_layout=`echo $current_server|sed 's:(:_:g; s:):_:g; s:|:_:g; s:\[:_:g; s:\]:_:g; s:-:_:g; s/^//;s/$//'`
-		    for servers in `(eval echo $brace_expansion)`
+			FILE=$FILE1;
+		    for server in `(eval echo $brace_expansion)`
 		    do
-		      input_layout=$input_layout$server_layout
-		      set_grouping;
-		      if [  "$groupname" !=  "" ];then
+			servers=$server;
+		 	check_method;
+		    done
+		   for servers in `cat $FILE`
+		    do
+
+		     	 input_layout=$input_layout$server_layout
+		      	set_grouping;
+		      	if [  "$groupname" !=  "" ];then
 			  if [ $DEBUG -ge 1 ];then
 			    echo "FOUND $groupname"
 			    echo $servers"|"$groupname"-"$j   $FILE.tmp
@@ -621,6 +646,7 @@ function check_reconnection() {
 			  fi
 			  echo $servers >> $FILE.tmp
 		      fi
+
 		  done
 	      done
 	    done
@@ -671,10 +697,9 @@ set_resolution;
 
 	find_layout;
 	if [ $LAYOUT_FOUND -le 0 ] ;then
-	  
 	    nm="";
 	    appnames=""
-	    check_reconnection
+	    check_reconnection;
 	    for names in `cat $FILE`
 	    do
 		nm=$nm" "$names
@@ -918,7 +943,11 @@ function create_terminals() {
 			if [ $DEBUG -ge 1 ]; then
 			  command1="command = /bin/bash\n"
 			else
-			  command1="command = ssh $currserver1\n"
+				if [ "$VPN_SERVER" == "" ]; then 
+			  		command1="command = ssh $currserver1\n"
+				else
+					command1="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver1\n"
+				fi
 			fi 
 			if [ "$currgroup1" != "" ];then 
 			  currentgroup1="group = $currgroup1\n"
@@ -928,7 +957,13 @@ function create_terminals() {
 			if [ $DEBUG -ge 1 ]; then
 			  command2="command = /bin/bash\n"
 			else
-			  command2="command = ssh $currserver2\n"
+				if [ "$VPN_SERVER" == "" ]; then 
+                                        command2="command = ssh $currserver2\n"
+                                else
+                                        command2="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver2\n"
+                                fi
+
+			  #command2="command = ssh $currserver2\n"
 			fi
 			if [ "$currgroup2" != "" ];then 
 			    currentgroup2="group = $currgroup2\n"
@@ -1141,6 +1176,15 @@ while test -n "$1"; do
                 terminator_connect;
                 exit 0;
             ;;
+
+	--vpn-host|-v)
+		VPN_SERVER=$2;
+		shift;
+		;;
+	--vpn-port|-vp)
+		VPN_PORT=$2;
+		shift;
+		;;
         --autodiscover|-a)
                 USERCHOICE="A"
                 environment=$2
@@ -1174,4 +1218,3 @@ if [ $# -eq 0 ]; then
     exit 1;
 fi
 #############################################################################################
-
