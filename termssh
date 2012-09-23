@@ -938,7 +938,7 @@ function create_terminals() {
 				if [ "$VPN_SERVER" == "" ]; then 
 			  		command1="command = ssh $currserver1\n"
 				else
-					command1="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver1\"\n"
+					command1="command = ssh -tt -p $VPN_PORT $VPN_SERVER -C \"ssh $currserver1\"\n"
 				fi
 			fi 
 			if [ "$currgroup1" != "" ];then 
@@ -952,7 +952,7 @@ function create_terminals() {
 				if [ "$VPN_SERVER" == "" ]; then 
                                         command2="command = ssh $currserver2\n"
                                 else
-                                        command2="command = ssh -tt -p $VPN_PORT $VPN_SERVER -c \"ssh $currserver2\"\n"
+                                        command2="command = ssh -tt -p $VPN_PORT $VPN_SERVER -C \"ssh $currserver2\"\n"
                                 fi
 
 			  #command2="command = ssh $currserver2\n"
