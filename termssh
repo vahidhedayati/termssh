@@ -263,6 +263,7 @@ function validate_servers() {
 # also ensures you are not logged in as root
 function terminator_connect() {
                 check_root;
+	    check_reconnection;
                 filesize=`wc -l $FILE|awk '{print $1}'`
                 if [ $filesize -gt 0 ];then
                         set_terminator;
@@ -304,33 +305,17 @@ function check_method()  {
       fi
       if [ $? = 0 ]; then
          echo $server >> $FILE
+   	 if [ $DEBUG -ge 1 ];then
+              echo " $server : querymethod = $querymethod  -- SUCCEEDED"
+         fi
+      else
+   	 if [ $DEBUG -ge 1 ];then
+              echo " $server : querymethod = $querymethod  -- FAILED WILL NOT BE USED FOR CONNECTION"
+         fi
       fi
 }
 #############################################################################################
 
-#SERVER CHECK METHODS
-function check_function()  {
-      #> $FILE
-      if [ "$querymethod" == "nc" ]; then
-          nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null
-      elif [ "$querymethod" == "netcat" ]; then
-          netcat -v  -w 1 $server -z 22 2>&1|grep succeeded >/dev/null
-      elif [ "$querymethod" == "host" ]; then
-          host $server | awk '/^[[:alnum:].-]+ has address/ { print $4 ; exit }' 2>&1|grep [1-9] > /dev/null
-      elif [ "$querymethod" == "nslookup" ]; then
-        nslookup $server | awk '/^Address: / { print $2 ; exit }'  2>&1|grep [1-9] > /dev/null
-      elif [ "$querymethod" == "dig" ]; then
-        dig  $server | awk '/^;; ANSWER SECTION:$/ { getline ; print $5 ; exit }'  2>&1|grep [1-9] > /dev/null
-      elif [ "$querymethod" == "shortdig" ]; then
-        dig +short $server | awk 'NR > 1 { exit } ; 1 2>&1|grep [1-9] > /dev/null'
-      elif [ "$querymethod" == "ping" ]; then
-        ping -c1 $server 2>&1|grep bytes > /dev/null
-      elif [ "$querymethod" == "disabled" ]; then 
-	echo "succeeded" > /dev/null
-      else
-        nc -v  -w 1 $server -z 22 2>&1|grep succeeded > /dev/null
-      fi
-}
 
 
 #############################################################################################
@@ -426,7 +411,7 @@ function del_entry() {
    grep "$layout" $terminator_config_file > /dev/null
     if [ $? = 0 ]; then
     
-    delids=`egrep -n "( \\\[\\\[[a-z]|^\\\[\\\[[a-z])" $HOME/.config/terminator/config|grep -v default|grep -A1 $layout|awk -F":" '{print $1}'|tr "\n" " "`
+    delids=`egrep -n "( \\\[\\\[[a-z]|^\\\[\\\[[a-z])" $HOME/.config/terminator/config|grep -v default|grep -A1 "$layout"|awk -F":" '{print $1}'|tr "\n" " "`
     delarray=( $delids )
     val1=${delarray[0]}
     val2=${delarray[1]}
@@ -630,6 +615,9 @@ function check_reconnection() {
 		do
 		    brace_expansion=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s:\[:{:g; s:\]:}:g; s:-:\.\.:g; s/^//;s/$//'`
 		    servers_layout=`echo $current_server|sed 's:(:_:g; s:):_:g; s:|:_:g; s:\[:_:g; s:\]:_:g; s:-:_:g; s/^//;s/$//'`
+		    if [ $DEBUG -ge 1 ];then
+                       echo " $current_server changed to: $brace_expansion"
+                    fi
 		    for server in `(eval echo $brace_expansion)`
 		    do
 		 	check_method;
@@ -705,7 +693,6 @@ set_resolution;
 	if [ $LAYOUT_FOUND -le 0 ] ;then
 	    nm="";
 	    appnames=""
-	    check_reconnection;
 	    for names in `cat $FILE`
 	    do
 		nm=$nm" "$names
@@ -717,9 +704,9 @@ set_resolution;
 		WINDOWS=$servercount;
 	    fi
 
-	    if [ $servercount -le 1 ]; then
-		tabs=0;
-		tabamount=0;
+	    if [ $servercount -eq 1 ]; then
+		tabs=1;
+		tabamount=1;
 	    else
 		tabs=`expr $servercount / $WINDOWS`
 		tabsamount=`echo "scale=1; $servercount / $WINDOWS"|bc|awk -F"." '{print $2}'`
@@ -826,7 +813,6 @@ set_resolution;
 			    pane="HPaned"
 			fi
 		    fi
-
 		    if [ $splitsize -gt 2 ]; then      
 			if [ $gg -ge 2 ]; then 
 			    gg=0;
@@ -1185,6 +1171,9 @@ while test -n "$1"; do
 
 	--vpn-host|-v)
 		VPN_SERVER=$2;
+		if [ "$VPN_SERVER" != "" ];then 
+			querymethod="disabled";
+		fi
 		shift;
 		;;
 	--vpn-port|-vp)
