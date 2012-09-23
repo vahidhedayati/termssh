@@ -42,16 +42,16 @@ The above would probably fail - check_method at the top of script can be changed
 I would suggest for vpn to either use -f and have all servers listed in a text file or do something like:
 
 # termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server1 server2 server3 server4"
+or
+
+# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server[1-4]" 
+
+So long as the pattern match matches exact server convention start/end. This would result in the expanded list matching initial input above it
+
+This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server" for each server in the list
+
+ querymethod is automatically disabled for vpn connections which in short disable server validation 
  
- This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server"
- for each host listed. 
- There may still be issues with the check_method call so if nothing has connected edit the script and around line 189 look for and change to:
- 
- 
- querymethod="disabled";
- 
- 
- This should no longer try to validate server existance and thus the input for -s or withing file name must be phyiscal and alive server names
  
 
 ## Normal pattern match using -s to define hosts - must be wrapped - Auto Discovers
