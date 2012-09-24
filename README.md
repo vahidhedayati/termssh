@@ -55,7 +55,7 @@ This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server" fo
  
 
 
-SSH Reverse tunnel connections:
+## SSH Reverse tunnel connections:
 
 remot_server issue: 
 # ssh -R1999:localhost:22 vahid@my_local_host
