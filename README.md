@@ -31,7 +31,8 @@ To understand the power of grouping -g simply place entire code in DEBUG mode, a
 Save script then on command line type in:
 
 
-## VPN Connections 
+## VPN Connections / SSH REVERSE TUNNEL Connections
+
 This allows you to define a vpn host and port - the problem may come into effect for pattern match 
 since if current connection requires a vpn to connect the script using nc will not be able to catch port 22
 thus pattern match will fail
@@ -52,7 +53,35 @@ This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server" fo
 
  querymethod is automatically disabled for vpn connections which in short disable server validation 
  
- 
+
+
+SSH Reverse tunnel connections:
+
+remot_server issue: 
+# ssh -R1999:localhost:22 vahid@my_local_host
+
+To connect through my reverse tunnel same as vpn:
+
+where -n is layout name
+
+ -v is vpn host (included my ldap username)
+
+ -vp is vpn port
+
+ -s is server input within speech marks
+
+
+#termssh -r -n "test2" -v "remote_username@localhost" -vp 1999 -s "apache01 apache02"
+
+or
+
+#termssh -r -n "test2" -v "remote_username@localhost" -vp 1999 -s "apache[01-10]"
+
+Which will connect from apache01 to apache10 servers, the remote_username@localhost can seem confusing but you would define the username used on remote network that you are reversing from
+the initial 
+
+
+
 
 ## Normal pattern match using -s to define hosts - must be wrapped - Auto Discovers
 
