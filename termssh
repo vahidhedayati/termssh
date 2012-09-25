@@ -268,7 +268,7 @@ function terminator_connect() {
                 if [ $filesize -gt 0 ];then
                         set_terminator;
                         layout=${layout//[[:space:]]}
-                        terminator -l "$layout"&
+                        terminator -l "$layout" 2>/dev/null  &
                 else
                         echo "File $FILE has no entries - terminator not launched"
                 fi
@@ -984,6 +984,8 @@ function usage() {
   echo -e "-fs | --fullscreen  				|  start session in full screen mode, Override FULL_SCREEN_MODE=0"
   echo -e "-g | --group  				|  groups server as per naming set_apptype, Override AUTO_GROUPING_ENABLED=0"
   echo -e "-w  | --windows  [2/4/8 ]  			| -w followed by 2 or 4 or 8 windows per tab"
+  echo -e "-v  | --vpn_host  [user@vpnip ]  			|remoteuser@locahost"
+  echo -e "-vp  | --vpn_port  [2001 ]  			| vpn port for above host to connect through"
   echo -e "-x  | --times  [1-10 ]  			| -x followed by 1 to any number above - reconnect value per server"
   echo -e "-n  | --layoutname  \"something or another\" 	| -n followed by a layout name in speech marks if it has spaces"
   colourit red  "Followed by either:"
