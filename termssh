@@ -608,9 +608,7 @@ function check_reconnection() {
 			FILE=$FILE.tmp1
 		> $FILE;
 		> $FILE1.tmp;
-	  for ((i=0; i < $value; i++)) 
-	   do
-		((j++))
+
 		for current_server in `cat $FILE1`
 		do
 		    brace_expansion=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s:\[:{:g; s:\]:}:g; s:-:\.\.:g; s/^//;s/$//'`
@@ -623,27 +621,29 @@ function check_reconnection() {
 		 	check_method;
 		    done
 		done
-		   for servers in `cat $FILE`
-		    do
-		     	 input_layout=$input_layout$server_layout
-		      	set_grouping;
-		      	if [  "$groupname" !=  "" ];then
-			  if [ $DEBUG -ge 1 ];then
-			    echo "FOUND $groupname"
-			    echo $servers"|"$groupname"-"$j   $FILE1.tmp
-			  fi
-			  echo $servers"|"$groupname"-"$j >> $FILE1.tmp
-		      else
-			  if [ $DEBUG -ge 1 ];then
-			    echo "No group name found for $servers - either does not match server convention at top of script"
-			    echo "or : AUTO_GROUPING is set to 0 and -g is not used in option given"
-			    echo $servers $FILE1.tmp
-			  fi
-			  echo $servers >> $FILE1.tmp
-		      fi
-
-		  done
-	    done
+	   	for ((i=0; i < $value; i++)) 
+	   	do
+			((j++))
+		   	for servers in `cat $FILE`
+		    	do
+		     	 	input_layout=$input_layout$server_layout
+		      		set_grouping;
+		      		if [  "$groupname" !=  "" ];then
+			  		if [ $DEBUG -ge 1 ];then
+			    			echo "FOUND $groupname"
+			    			echo $servers"|"$groupname"-"$j   $FILE1.tmp
+			  		fi
+			  		echo $servers"|"$groupname"-"$j >> $FILE1.tmp
+		      		else
+			  		if [ $DEBUG -ge 1 ];then
+			    			echo "No group name found for $servers - either does not match server convention at top of script"
+			    			echo "or : AUTO_GROUPING is set to 0 and -g is not used in option given"
+			    			echo $servers $FILE1.tmp
+			  		fi
+			  		echo $servers >> $FILE1.tmp
+		      		fi
+		  	done
+	    	done
 	    FILE=$FILE1.tmp
 	   fi    
 }
