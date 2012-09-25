@@ -480,7 +480,7 @@ function connect_existing_layout() {
 	    layout=${layout//[[:space:]]}
 	    echo
 	    echo "connecting to \"$layout\""
-	    terminator -l "$layout"&
+	    terminator -l "$layout" 2>/dev/null  &
 	    break
 	  done
 	exit
