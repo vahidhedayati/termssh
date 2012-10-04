@@ -611,7 +611,10 @@ function check_reconnection() {
 
 		for current_server in `cat $FILE1`
 		do
-		    brace_expansion=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s:\[:{:g; s:\]:}:g; s:-:\.\.:g; s/^//;s/$//'`
+		    #brace_expansion=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s:\[:{:g; s:\]:}:g; s:-:\.\.:g; s/^//;s/$//'`
+		    server=`echo $current_server|sed 's:(:{:g; s:):}:g; s:|:,:g; s/^//;s/$//'`
+                    for times in `echo $server|grep -o "\["`; do server=`echo $server|sed 's/\(.*\)\[\(.*\)-\(.*\)]\(.*\)/\1\{\2\.\.\3\}\4/g'`; done
+                    brace_expansion=$server;
 		    servers_layout=`echo $current_server|sed 's:(:_:g; s:):_:g; s:|:_:g; s:\[:_:g; s:\]:_:g; s:-:_:g; s/^//;s/$//'`
 		    if [ $DEBUG -ge 1 ];then
                        echo " $current_server changed to: $brace_expansion"
