@@ -1,0 +1,23 @@
+# -*- shell-script -*-
+#
+# Bash tab auto-completion rules for termssh
+# File: Name: termssh Location: /etc/bash_completion.d/termssh
+# ensure this file is placed and stored as :  /etc/bash_completion.d/termssh
+
+
+have termssh &&
+_termssh()
+{
+	local cur=${COMP_WORDS[COMP_CWORD]}
+	COMPREPLY=($(compgen -W "`termssh --shell-options`" -- $cur))
+	 command="${COMP_WORDS[1]}"
+        case "${command}" in
+connect)
+  COMPREPLY=( $(compgen -W "`egrep '( \[\[[a-z]|^\[\[[a-z])' $HOME/.config/terminator/config|grep -v default|tr -d '['|tr -d ']'`" -- ${cur}) ); compopt -o nospace; return 0;;
+  #COMPREPLY=( $(compgen -W "`egrep '( \[\[[a-z]|^\[\[[a-z])' $HOME/.config/terminator/config|grep -v default|tr -d '['|tr -d ']'`" -- ${cur}) ); compopt -o return 0;;
+*) ;;
+esac
+
+
+}
+[ "${have:-}" ] && complete -F _termssh -o default termssh
