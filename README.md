@@ -1,3 +1,11 @@
+
+Prerequisite: 
+
+sudo apt-get install terminator
+or
+sudo yum install terminator
+
+
 termssh is a script to create and maintain gnome terminator layouts for ssh access either via:
 
  -g    | Auto groups servers per apptype conventions,
@@ -30,29 +38,6 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
 To understand the power of grouping -g simply place entire code in DEBUG mode, at the top of termssh script find DEBUG which is set to 0 change this to 1.
 Save script then on command line type in:
 
-
-## VPN Connections / SSH REVERSE TUNNEL Connections
-
-This allows you to define a vpn host and port - the problem may come into effect for pattern match 
-since if current connection requires a vpn to connect the script using nc will not be able to catch port 22
-thus pattern match will fail
-
- termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "local(h|i)os[s-t] local(h|i)os[s-t]"
- 
-The above would probably fail - check_method at the top of script can be changed to ping so long as it can resolve short names locally
-I would suggest for vpn to either use -f and have all servers listed in a text file or do something like:
-
-# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server1 server2 server3 server4"
-or
-
-# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server[1-4]" 
-
-So long as the pattern match matches exact server convention start/end. This would result in the expanded list matching initial input above it
-
-This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server" for each server in the list
-
- querymethod is automatically disabled for vpn connections which in short disable server validation 
- 
 
 
 ## SSH Reverse tunnel connections:
@@ -255,6 +240,29 @@ If all auto discovery found or file contains 1,2,3 or 4 servers it will still cr
 
 
 
+
+## VPN Connections / SSH REVERSE TUNNEL Connections
+
+This allows you to define a vpn host and port - the problem may come into effect for pattern match 
+since if current connection requires a vpn to connect the script using nc will not be able to catch port 22
+thus pattern match will fail
+
+ termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "local(h|i)os[s-t] local(h|i)os[s-t]"
+ 
+The above would probably fail - check_method at the top of script can be changed to ping so long as it can resolve short names locally
+I would suggest for vpn to either use -f and have all servers listed in a text file or do something like:
+
+# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server1 server2 server3 server4"
+or
+
+# termssh.sh -n "vpncon" -r -vp 222 -v windows_host -s "server[1-4]" 
+
+So long as the pattern match matches exact server convention start/end. This would result in the expanded list matching initial input above it
+
+This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server" for each server in the list
+
+ querymethod is automatically disabled for vpn connections which in short disable server validation 
+ 
 
 
 ## Help 
