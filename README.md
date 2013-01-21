@@ -38,6 +38,10 @@ To understand the power of grouping -g simply place entire code in DEBUG mode, a
 Save script then on command line type in:
 
 
+## termssh.bc
+Copy this file to /etc/bash_completion.d/termssh, the next shell session to your host will now process auto completion on termssh, this returns valid switches and 
+allows you to connect to existing saved layouts, type in termssh press tab and a list of options are shown. Type in termssh conn press tab then tab again and it will list all saved profiles. 
+You can start typing in some and pressing tab for it to complete the connection for you
 
 
 
