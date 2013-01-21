@@ -1,4 +1,3 @@
-
 Prerequisite: 
 
 sudo apt-get install terminator
@@ -38,32 +37,6 @@ termssh is a script to create and maintain gnome terminator layouts for ssh acce
 To understand the power of grouping -g simply place entire code in DEBUG mode, at the top of termssh script find DEBUG which is set to 0 change this to 1.
 Save script then on command line type in:
 
-
-
-## SSH Reverse tunnel connections:
-
-remot_server issue: 
-# ssh -R1999:localhost:22 vahid@my_local_host
-
-To connect through my reverse tunnel same as vpn:
-
-where -n is layout name
-
- -v is vpn host (included my ldap username)
-
- -vp is vpn port
-
- -s is server input within speech marks
-
-
-#termssh -r -n "test2" -v "remote_username@localhost" -vp 1999 -s "apache01 apache02"
-
-or
-
-#termssh -r -n "test2" -v "remote_username@localhost" -vp 1999 -s "apache[01-10]"
-
-Which will connect from apache01 to apache10 servers, the remote_username@localhost can seem confusing but you would define the username used on remote network that you are reversing from
-the initial 
 
 
 
@@ -263,6 +236,33 @@ This way it will do ssh -tt -p $VPN_PORT $VPN_SERVER -c "ssh $current_server" fo
 
  querymethod is automatically disabled for vpn connections which in short disable server validation 
  
+ 
+
+## SSH Reverse tunnel connections:
+
+remot_server issue: 
+# ssh -R1999:localhost:22 vahid@my_local_host
+
+To connect through my reverse tunnel same as vpn:
+
+where -n is layout name
+
+ -v is vpn host (included my ldap username)
+
+ -vp is vpn port
+
+ -s is server input within speech marks
+
+
+#termssh -r -n "test2" -v "remote_username@localhost" -vp 1999 -s "apache01 apache02"
+
+or
+
+#termssh -r -n "test2" -v "remote_username@localhost" -vp 1999 -s "apache[01-10]"
+
+Which will connect from apache01 to apache10 servers, the remote_username@localhost can seem confusing but you would define the username used on remote network that you are reversing from
+the initial 
+
 
 
 ## Help 
