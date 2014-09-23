@@ -46,7 +46,7 @@
 ###############################
 # If you are trying get auto discovery to work - more verbosity is given and connections are 
 # converted to local /bin/bash  command on local machine executing this script
-DEBUG=0;
+DEBUG=1;
 
 
 ###############################
@@ -186,7 +186,10 @@ oracle_group="oracle";
 # host nslookup dig shortdig netcat nc ping disabled
 # disabled only suggested for vpn access
 
-querymethod="nc";
+#querymethod="nc";
+querymethod="disabled";
+
+
 #############################################################################################
 
 #############################################################################################
@@ -394,13 +397,13 @@ function set_resolution() {
       horizontal=$((horizontal))
       vertical=$((vertical))
     else
-      horizontal=1024
-      vertical=768
+      horizontal=800
+      vertical=600
       unknown=1;
     fi
     if [ $unknown -eq 0 ] && [ $FULL_SCREEN_MODE -ne 1 ]; then
-      horizontal=`expr $horizontal / 2`
-      vertical=`expr $vertical / 2`
+      horizontal=`echo "scale = 0 ; $horizontal / 1.2" | bc `
+      vertical=`echo "scale = 0 ; $vertical / 1.2" | bc `
     fi
 }
 #############################################################################################
@@ -936,7 +939,7 @@ function create_terminals() {
 		    fi
 		    if [ "$currserver1" != "" ];then
 			if [ $DEBUG -ge 1 ]; then
-			  command1="command = /bin/bash\n"
+			  command1="command = ssh $currserver1\n"
 			else
 				if [ "$VPN_SERVER" == "" ]; then 
 			  		command1="command = ssh $currserver1\n"
@@ -950,7 +953,7 @@ function create_terminals() {
 		    fi
 		    if [ "$currserver2" != "" ];then
 			if [ $DEBUG -ge 1 ]; then
-			  command2="command = /bin/bash\n"
+			  command2="command = ssh $currserver2\n"
 			else
 				if [ "$VPN_SERVER" == "" ]; then 
                                         command2="command = ssh $currserver2\n"
