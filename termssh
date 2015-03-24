@@ -500,7 +500,6 @@ function check_reconnection() {
 			for servers in `cat $FILE`
 				do
 					input_layout=$input_layout$server_layout
-					set_grouping;
 					if [  "$groupname" !=  "" ];then
 					if [ $DEBUG -ge 1 ];then
 							echo "FOUND $groupname"
